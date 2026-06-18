@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
+/* ─── 커스텀 테마 ──────────────────────────────────────── */
+@theme {
+  /* 메인 청록 */
+  --color-primary-50: #E1F5EE;
+  --color-primary-100: #9FE1CB;
+  --color-primary-200: #5DCAA5;
+  --color-primary-400: #1D9E75;
+  --color-primary-600: #0F6E56;
+  --color-primary-800: #085041;
+  --color-primary-950: #04342C;
+
+  /* 포인트 보라 */
+  --color-accent-100: #CECBF6;
+  --color-accent-200: #AFA9EC;
+  --color-accent-400: #7F77DD;
+  --color-accent-600: #534AB7;
+
+  /* 경고 */
+  --color-danger-50: #FCEBEB;
+  --color-danger-200: #F7C1C1;
+  --color-danger-400: #E24B4A;
+  --color-danger-800: #791F1F;
+  --color-danger-950: #501313;
+
+  /* 주의 */
+  --color-warning-50: #FAEEDA;
+  --color-warning-200: #FAC775;
+  --color-warning-400: #EF9F27;
+  --color-warning-950: #412402;
+
+  /* 폰트 크기 */
+  --font-size-xs: 13px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  /* 보더 반경 */
+  --radius-card: 12px;
+  --radius-pill: 9999px;
+}
+
+/* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-page: #ffffff;
+  --color-card: #ffffff;
+  --color-card-muted: #E1F5EE;
+  --color-text-base: #04342C;
+  --color-text-muted: #1D9E75;
+  --color-text-hint: #5DCAA5;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── 다크 모드 ────────────────────────────────────────── */
+.dark {
+  --color-page: #04342C;
+  --color-card: #085041;
+  --color-card-muted: #0F6E56;
+  --color-text-base: #ffffff;
+  --color-text-muted: #9FE1CB;
+  --color-text-hint: #5DCAA5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── 전역 기본 스타일 ─────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--color-page);
+  color: var(--color-text-base);
   font-family: Arial, Helvetica, sans-serif;
 }
