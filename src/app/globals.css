@@ -2,32 +2,34 @@
 
 /* ─── 커스텀 테마 ──────────────────────────────────────── */
 @theme {
+  --font-sans: var(--font-pretendard), sans-serif;
+
   /* 메인 청록 */
-  --color-primary-50: #E1F5EE;
-  --color-primary-100: #9FE1CB;
-  --color-primary-200: #5DCAA5;
-  --color-primary-400: #1D9E75;
-  --color-primary-600: #0F6E56;
+  --color-primary-50: #e1f5ee;
+  --color-primary-100: #9fe1cb;
+  --color-primary-200: #5dcaa5;
+  --color-primary-400: #1d9e75;
+  --color-primary-600: #0f6e56;
   --color-primary-800: #085041;
-  --color-primary-950: #04342C;
+  --color-primary-950: #04342c;
 
   /* 포인트 보라 */
-  --color-accent-100: #CECBF6;
-  --color-accent-200: #AFA9EC;
-  --color-accent-400: #7F77DD;
-  --color-accent-600: #534AB7;
+  --color-accent-100: #cecbf6;
+  --color-accent-200: #afa9ec;
+  --color-accent-400: #7f77dd;
+  --color-accent-600: #534ab7;
 
   /* 경고 */
-  --color-danger-50: #FCEBEB;
-  --color-danger-200: #F7C1C1;
-  --color-danger-400: #E24B4A;
-  --color-danger-800: #791F1F;
+  --color-danger-50: #fcebeb;
+  --color-danger-200: #f7c1c1;
+  --color-danger-400: #e24b4a;
+  --color-danger-800: #791f1f;
   --color-danger-950: #501313;
 
   /* 주의 */
-  --color-warning-50: #FAEEDA;
-  --color-warning-200: #FAC775;
-  --color-warning-400: #EF9F27;
+  --color-warning-50: #faeeda;
+  --color-warning-200: #fac775;
+  --color-warning-400: #ef9f27;
   --color-warning-950: #412402;
 
   /* 폰트 크기 */
@@ -44,12 +46,12 @@
 
   --color-page: var(--color-page);
   --color-card: var(--color-card);
-   --color-card-muted: var(--color-card-muted);
+  --color-card-muted: var(--color-card-muted);
   --color-text-base: var(--color-text-base);
   --color-text-muted: var(--color-text-muted);
   --color-text-hint: var(--color-text-hint);
   --color-border-focus: var(--color-border-focus);
-  --color-button : var(--color-button);
+  --color-button: var(--color-button);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
@@ -57,14 +59,14 @@
   /* base : 본문 텍스트 - 또렷 */
   /* muted : 보조 텍스트 - 약간 흐림 */
   /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
-  --color-page: #E1F5EE;
+  --color-page: #e1f5ee;
   --color-card: #ffffff;
-  --color-card-muted: #E1F5EE;
-  --color-border-focus: #1D9E75;  
-  --color-text-muted: #1D9E75;
-  --color-button : #1D9E75; 
-  --color-text-base: #04342C;
-  --color-text-hint: #5DCAA5;
+  --color-card-muted: #e1f5ee;
+  --color-border-focus: #1d9e75;
+  --color-text-muted: #1d9e75;
+  --color-button: #1d9e75;
+  --color-text-base: #04342c;
+  --color-text-hint: #5dcaa5;
 }
 
 /* ─── 다크 모드 ────────────────────────────────────────── */
@@ -72,18 +74,18 @@
   /* base : 본문 텍스트 - 또렷 */
   /* muted : 보조 텍스트 - 약간 흐림 */
   /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
-  --color-page: #04342C;
+  --color-page: #04342c;
   --color-card: #085041;
-  --color-card-muted: #0F6E56;
-  --color-border-focus: #9FE1CB;  
-  --color-text-base: ##D3F5EE;
-  --color-button : #5DCAA5;
-  --color-text-muted: #9FE1CB;
-  --color-text-hint: #5DCAA5;
+  --color-card-muted: #0f6e56;
+  --color-border-focus: #9fe1cb;
+  --color-text-base: #d3f5ee;
+  --color-button: #5dcaa5;
+  --color-text-muted: #9fe1cb;
+  --color-text-hint: #5dcaa5;
 }
 
 /* ─── 전역 기본 스타일 ─────────────────────────────────── */
 body {
   background-color: var(--color-page);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-pretendard), sans-serif;
 }
