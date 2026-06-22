@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
+/* ─── 커스텀 테마 ──────────────────────────────────────── */
+@theme {
+  --font-sans: var(--font-pretendard), sans-serif;
+
+  /* 메인 청록 */
+  --color-primary-50: #e1f5ee;
+  --color-primary-100: #9fe1cb;
+  --color-primary-200: #5dcaa5;
+  --color-primary-400: #1d9e75;
+  --color-primary-600: #0f6e56;
+  --color-primary-800: #085041;
+  --color-primary-950: #04342c;
+
+  /* 포인트 보라 */
+  --color-accent-100: #cecbf6;
+  --color-accent-200: #afa9ec;
+  --color-accent-400: #7f77dd;
+  --color-accent-600: #534ab7;
+
+  /* 경고 */
+  --color-danger-50: #fcebeb;
+  --color-danger-200: #f7c1c1;
+  --color-danger-400: #e24b4a;
+  --color-danger-800: #791f1f;
+  --color-danger-950: #501313;
+
+  /* 주의 */
+  --color-warning-50: #faeeda;
+  --color-warning-200: #fac775;
+  --color-warning-400: #ef9f27;
+  --color-warning-950: #412402;
+
+  /* 폰트 크기 */
+  --font-size-xs: 13px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  /* 보더 반경 */
+  --radius-card: 12px;
+  --radius-pill: 9999px;
+
+  --color-page: var(--color-page);
+  --color-card: var(--color-card);
+  --color-card-muted: var(--color-card-muted);
+  --color-text-base: var(--color-text-base);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-hint: var(--color-text-hint);
+  --color-border-focus: var(--color-border-focus);
+  --color-button: var(--color-button);
+  --color-text-reverse-base: var(--color-text-reverse-base);
+  --color-hover-color: var(--color-hover-color);
+}
+
+/* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* base : 본문 텍스트 - 또렷 */
+  /* muted : 보조 텍스트 - 약간 흐림 */
+  /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
+  --color-page: #e1f5ee;
+  --color-card: #ffffff;
+  --color-card-muted: #e1f5ee;
+  --color-border-focus: #1d9e75;
+  --color-text-muted: #1d9e75;
+  --color-button: #1d9e75;
+  --color-text-base: #04342c;
+  --color-text-hint: #5dcaa5;
+  --color-text-reverse-base: #e1f5ee;
+  --color-hover-color: #0f6e56;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── 다크 모드 ────────────────────────────────────────── */
+.dark {
+  /* base : 본문 텍스트 - 또렷 */
+  /* muted : 보조 텍스트 - 약간 흐림 */
+  /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
+  --color-page: #04342c;
+  --color-card: #085041;
+  --color-card-muted: #0f6e56;
+  --color-border-focus: #9fe1cb;
+  --color-text-base: #d3f5ee;
+  --color-button: #5dcaa5;
+  --color-text-muted: #9fe1cb;
+  --color-text-hint: #5dcaa5;
+  --color-text-reverse-base: #04342c;
+  --color-hover-color: #9fe1cb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── 전역 기본 스타일 ─────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-page);
+  font-family: var(--font-pretendard), sans-serif;
 }
