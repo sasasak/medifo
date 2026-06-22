@@ -1,47 +1,27 @@
 "use client";
 import Input from "@/components/ui/Input";
-import { useTheme } from "next-themes";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
-export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <button>테마 불러오는 중...</button>;
-  }
-
-  return (
-    <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="cursor-pointer"
-    >
-      현재 : {theme}
-    </button>
-  );
-}
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { Pill } from "lucide-react";
 
 export default function Login() {
   return (
-    <section className="m-auto">
+    <section className="m-auto w-full max-w-md px-6">
       <ThemeToggle />
-      <h1 className="sr-only">로그인 페이지입니다.</h1>
-      <h2 className="text-xl">Medifo</h2>
-      <p>건강한 복약 관리의 시작</p>
-      <form
-        action=""
-        className="bg-card text-text-base flex w-100 flex-col gap-8 rounded-2xl p-5"
-      >
+      <div className="flex flex-col justify-center items-center gap-3 py-12">
+        <div className="bg-button w-20 aspect-square rounded-full flex justify-center items-center text-4xl">
+          <Pill size={35} className="text-text-reverse-base" />
+        </div>
+        <h1 className="sr-only">로그인 페이지입니다.</h1>
+        <h2 className="text-4xl text-text-base">Medifo</h2>
+        <p className="text-text-muted text-sm">건강한 복약 관리의 시작</p>
+      </div>
+      <form className="bg-card text-text-base flex flex-col rounded-2xl p-5 gap-5">
         <Input
           id="email"
           type="email"
           label="이메일 "
-          placeholder="email@email.com"
+          placeholder="example@email.com"
         />
         <Input
           id="password"
@@ -49,13 +29,18 @@ export default function Login() {
           label="비밀번호"
           placeholder="비밀번호를 입력해주세요."
         />
-        <button type="button" className="bg-button h-14 rounded-4xl">
+        <button
+          type="submit"
+          className="bg-button h-14 rounded-4xl w-full text-text-reverse-base cursor-pointer hover:bg-hover-color"
+        >
           로그인
         </button>
       </form>
-      <p>
+      <p className="text-text-muted mt-6 text-center text-sm flex items-center justify-center gap-1">
         아직 계정이 없으신가요?
-        <Link href="/signup">회원가입</Link>
+        <Link href="/signup" className="text-text-hint font-bold">
+          회원가입
+        </Link>
       </p>
     </section>
   );
