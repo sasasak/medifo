@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ─── 커스텀 테마 ──────────────────────────────────────── */
 @theme {
@@ -61,15 +61,15 @@
   /* base : 본문 텍스트 - 또렷 */
   /* muted : 보조 텍스트 - 약간 흐림 */
   /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
-  --color-page: #e1f5ee;
+  --color-page: #f0fdf9;
   --color-card: #ffffff;
-  --color-card-muted: #e1f5ee;
+  --color-card-muted: #f0fdf9;
   --color-border-focus: #1d9e75;
   --color-text-muted: #1d9e75;
   --color-button: #1d9e75;
   --color-text-base: #04342c;
   --color-text-hint: #5dcaa5;
-  --color-text-reverse-base: #e1f5ee;
+  --color-text-reverse-base: #f0fdf9;
   --color-hover-color: #0f6e56;
 }
 
