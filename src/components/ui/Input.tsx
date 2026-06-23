@@ -22,7 +22,7 @@ export default function Input({ id, type, label, placeholder }: InputProps) {
           id={id}
           type={isPassword && showPassword ? 'text' : type}
           placeholder={placeholder}
-          className="text-text-hint border-card-muted rounded-card focus:ring-border-focus h-14 w-full border px-3 py-2 pr-12 font-medium outline-none focus:ring-1"
+          className="text-text-hint border-card-border rounded-card focus:ring-border-focus h-14 w-full border px-3 py-2 pr-12 font-medium outline-none focus:ring-1"
         />
         {isPassword && (
           <button

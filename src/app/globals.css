@@ -54,6 +54,7 @@
   --color-button: var(--color-button);
   --color-text-reverse-base: var(--color-text-reverse-base);
   --color-hover-color: var(--color-hover-color);
+  --color-card-border: var(--color-card-border);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
@@ -64,6 +65,7 @@
   --color-page: #f0fdf9;
   --color-card: #ffffff;
   --color-card-muted: #f0fdf9;
+  --color-card-border: #e1f5ee;
   --color-border-focus: #1d9e75;
   --color-text-muted: #1d9e75;
   --color-button: #1d9e75;
@@ -81,6 +83,7 @@
   --color-page: #04342c;
   --color-card: #085041;
   --color-card-muted: #0f6e56;
+  --color-card-border: #0f6e56;
   --color-border-focus: #9fe1cb;
   --color-text-base: #d3f5ee;
   --color-button: #5dcaa5;
