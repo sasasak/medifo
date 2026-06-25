@@ -54,7 +54,7 @@ export const signupAction = async (_: unknown, formData: FormData) => {
   }
 
   // 7. 성공하면 리다이렉트
-  redirect('/login');
+  redirect('/signup/success');
 };
 
 // 작성 후 해야할 것
