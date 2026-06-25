@@ -19,7 +19,10 @@ export default function Signup() {
         </Link>
         <h1 className="text-text-base text-2xl">회원가입</h1>
       </div>
-      <form className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5">
+      <form
+        action={formAction}
+        className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5"
+      >
         <Input
           id="email"
           type="email"
@@ -48,16 +51,20 @@ export default function Signup() {
           placeholder="사용할 닉네임을 입력해주세요."
           name="nickname"
         />
+
+        {state?.error && <p className="text-danger-400">{state.error}</p>}
+
         <button
           type="submit"
+          disabled={isPending}
           className="bg-button text-text-reverse-base hover:bg-hover-color h-14 w-full cursor-pointer rounded-4xl"
         >
-          회원가입
+          {isPending ? '가입 중 ... ' : '회원가입'}
         </button>
       </form>
       <p className="text-text-muted mt-6 flex items-center justify-center gap-1 text-center text-sm">
         이미 계정이 있으신가요?
-        <Link href="/signup" className="text-text-hint font-bold">
+        <Link href="/login" className="text-text-hint font-bold">
           로그인
         </Link>
       </p>
