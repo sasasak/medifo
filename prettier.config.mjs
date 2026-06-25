@@ -21,7 +21,7 @@ const prettierConfig = {
   // 객체 속성 key 값에 인용 부호 사용 여부 (ex: { 'key': 'xkieo-xxxx' })
   quoteProps: 'as-needed',
   // 세미콜론(;) 사용 여부
-  semi: false,
+  semi: true,
   // 싱글 인용 부호(') 사용 여부
   singleQuote: true,
   // 탭 너비 설정
@@ -30,6 +30,6 @@ const prettierConfig = {
   trailingComma: 'all',
   // 탭 사용 여부
   useTabs: false,
-}
+};
 
-export default prettierConfig
+export default prettierConfig;

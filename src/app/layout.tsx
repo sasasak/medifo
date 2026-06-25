@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { ThemeProvider } from "next-themes";
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import './globals.css';
+import { ThemeProvider } from 'next-themes';
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
-  variable: "--font-pretendard",
-  display: "swap",
-  weight: "45 920",
+  src: '../../public/fonts/PretendardVariable.woff2',
+  variable: '--font-pretendard',
+  display: 'swap',
+  weight: '45 920',
 });
 
 export const metadata: Metadata = {
-  title: "Medifo",
-  description: "건강한 복약 관리의 시작",
+  title: 'Medifo',
+  description: '건강한 복약 관리의 시작',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
       className={`${pretendard.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>

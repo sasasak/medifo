@@ -1,6 +1,6 @@
-import Input from '@/components/ui/Input'
-import Link from 'next/link'
-import { Pill } from 'lucide-react'
+import Input from '@/components/ui/Input';
+import Link from 'next/link';
+import { Pill } from 'lucide-react';
 
 export default function Login() {
   return (
@@ -40,5 +40,5 @@ export default function Login() {
         </Link>
       </p>
     </section>
-  )
+  );
 }

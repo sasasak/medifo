@@ -1,11 +1,15 @@
-'use client'
+'use client';
 
-import Input from '@/components/ui/Input'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import Input from '@/components/ui/Input';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useActionState } from 'react';
+import { signupAction } from './signupAction';
 
 export default function Signup() {
+  const [state, formAction, isPending] = useActionState(signupAction, null);
+
   return (
     <section className="m-auto w-full max-w-md px-6">
       <ThemeToggle />
@@ -21,18 +25,28 @@ export default function Signup() {
           type="email"
           label="이메일"
           placeholder="example@email.com"
+          name="email"
         />
         <Input
           id="password"
           type="password"
           label="비밀번호"
           placeholder="비밀번호를 입력해주세요."
+          name="password"
         />
         <Input
-          id="password"
+          id="confirmPassword"
           type="password"
           label="비밀번호 확인"
           placeholder="비밀번호를 다시 입력해주세요."
+          name="confirmPassword"
+        />
+        <Input
+          id="nickname"
+          type="text"
+          label="닉네임 입력"
+          placeholder="사용할 닉네임을 입력해주세요."
+          name="nickname"
         />
         <button
           type="submit"
@@ -48,5 +62,5 @@ export default function Signup() {
         </Link>
       </p>
     </section>
-  )
+  );
 }

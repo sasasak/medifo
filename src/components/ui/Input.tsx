@@ -1,17 +1,24 @@
-'use client'
-import { Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
+'use client';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 interface InputProps {
-  id: string
-  type: string
-  label: string
-  placeholder?: string
+  id: string;
+  type: string;
+  label: string;
+  placeholder?: string;
+  name: string;
 }
 
-export default function Input({ id, type, label, placeholder }: InputProps) {
-  const [showPassword, setShowPassword] = useState(false)
-  const isPassword = type === 'password'
+export default function Input({
+  id,
+  type,
+  label,
+  placeholder,
+  name,
+}: InputProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === 'password';
   return (
     <div className="flex flex-col gap-2 p-2">
       <label htmlFor={id} className="text-text-base w-full text-sm">
@@ -22,6 +29,7 @@ export default function Input({ id, type, label, placeholder }: InputProps) {
           id={id}
           type={isPassword && showPassword ? 'text' : type}
           placeholder={placeholder}
+          name={name}
           className="text-text-hint border-card-border rounded-card focus:ring-border-focus h-14 w-full border px-3 py-2 pr-12 font-medium outline-none focus:ring-1"
         />
         {isPassword && (
@@ -36,5 +44,5 @@ export default function Input({ id, type, label, placeholder }: InputProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
