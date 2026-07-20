@@ -4,7 +4,7 @@ import './globals.css';
 import { ThemeProvider } from 'next-themes';
 
 const pretendard = localFont({
-  src: '../../public/fonts/PretendardVariable.woff2',
+  src: '../../public/fonts/Pretendard-Medium.woff2',
   variable: '--font-pretendard',
   display: 'swap',
   weight: '45 920',
