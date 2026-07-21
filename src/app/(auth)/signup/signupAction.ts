@@ -38,6 +38,7 @@ export const signupAction = async (_: unknown, formData: FormData) => {
     return { error: '회원가입에 실패했습니다. 다시 시도해주세요.' };
   }
 
+  // 회원가입 시
   if (!data.user) {
     return { error: '사용자 정보를 생성하지 못했습니다.' };
   }
@@ -56,22 +57,3 @@ export const signupAction = async (_: unknown, formData: FormData) => {
   // 7. 성공하면 리다이렉트
   redirect('/signup/success');
 };
-
-// 작성 후 해야할 것
-/*
-1. 연결된 page의 page.tsx에 useActionState 추가하기 + use client 추가 - useActionState 는 클라이언트에서 사용 가능 
-const [state, formAction, isPending] = useActionState(signupAction, null)
-
-2. <form> 에 action 연결 
-<form action={formAction}>
-
-+ input 에서 name 을 받도록 수정, formData.get('eamil')  로 값을 꺼내려면 input 에 name 이 있어야함 
-
-3. 에러 메시지 표시 
-{state?.error && <p className="text-red-500">{state.error}</p>}
-
-4. 로딩 상태 표시 (선택)
-<button type="submit" disabled={isPending}>
-  {isPending ? "로그인 중..." : "로그인"}
-</button>
-*/
