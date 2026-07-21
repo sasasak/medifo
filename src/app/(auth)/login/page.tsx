@@ -1,8 +1,14 @@
+'use client';
+
 import Input from '@/components/ui/Input';
 import Link from 'next/link';
 import { Pill } from 'lucide-react';
+import { loginAction } from './loginAction';
+import { useActionState } from 'react';
 
 export default function Login() {
+  const [state, formAction, isPending] = useActionState(loginAction, null);
+
   return (
     <section className="m-auto w-full max-w-md px-6">
       <div className="flex flex-col items-center justify-center gap-3 py-12">
@@ -13,24 +19,31 @@ export default function Login() {
         <h2 className="text-text-base text-3xl">Medifo</h2>
         <p className="text-text-muted text-sm">건강한 복약 관리의 시작</p>
       </div>
-      <form className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5">
+      <form
+        action={formAction}
+        className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5"
+      >
         <Input
           id="email"
           type="email"
           label="이메일 "
           placeholder="example@email.com"
+          name="email"
         />
         <Input
           id="password"
           type="password"
           label="비밀번호"
           placeholder="비밀번호를 입력해주세요."
+          name="password"
         />
+        {state?.error && <p className="text-danger-400">{state.error}</p>}
         <button
           type="submit"
+          disabled={isPending}
           className="bg-button text-text-reverse-base hover:bg-hover-color h-14 w-full cursor-pointer rounded-4xl"
         >
-          로그인
+          {isPending ? '로그인 중 ... ' : '로그인'}
         </button>
       </form>
       <p className="text-text-muted mt-6 flex items-center justify-center gap-1 text-center text-sm">
