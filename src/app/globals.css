@@ -1,8 +1,15 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* ─── 커스텀 테마 ──────────────────────────────────────── */
 @theme {
-  --font-sans: var(--font-pretendard), sans-serif;
+  --font-sans: 'Pretendard', sans-serif;
 
   /* 메인 청록 */
   --color-primary-50: #e1f5ee;
@@ -55,6 +62,8 @@
   --color-text-reverse-base: var(--color-text-reverse-base);
   --color-hover-color: var(--color-hover-color);
   --color-card-border: var(--color-card-border);
+  --color-sidebar-active: var(--color-sidebar-active);
+  --color-sidebar-text: var(--color-sidebar-text);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
@@ -73,6 +82,8 @@
   --color-text-hint: #5dcaa5;
   --color-text-reverse-base: #f0fdf9;
   --color-hover-color: #0f6e56;
+  --color-sidebar-active: #1d9e75;
+  --color-sidebar-text: #a5f3d9;
 }
 
 /* ─── 다크 모드 ────────────────────────────────────────── */
@@ -91,10 +102,12 @@
   --color-text-hint: #5dcaa5;
   --color-text-reverse-base: #04342c;
   --color-hover-color: #9fe1cb;
+  --color-sidebar-active: #1d9e75;
+  --color-sidebar-text: #a5f3d9;
 }
 
 /* ─── 전역 기본 스타일 ─────────────────────────────────── */
 body {
   background-color: var(--color-page);
-  font-family: var(--font-pretendard), sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }

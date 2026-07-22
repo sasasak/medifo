@@ -1,9 +1,14 @@
-// 나중에 넣을 내용 : 사이드바, 헤더 ...
+import Sidebar from '@/components/layout/Sidebar';
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="flex">
+      <Sidebar />
+      {children}
+    </div>
+  );
 }
