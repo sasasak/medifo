@@ -1,8 +1,11 @@
 'use client';
 
+import { logoutAction } from '@/app/(auth)/logout/logoutAction';
 import { Home, LogOut, MapPin, Pill, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Modal from '../ui/Modal';
+import { useState } from 'react';
 
 const MENUS = {
   USER: [
@@ -16,6 +19,7 @@ const MENUS = {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [isModalOpen, SetIsModalOpen] = useState(false);
   return (
     <aside className="bg-card hidden min-h-screen w-full max-w-60 flex-col justify-between md:flex">
       <div>
@@ -60,7 +64,20 @@ export default function Sidebar() {
         </nav>
       </div>
       <div className="border-sidebar-active border-t p-4">
-        <button className="text-sidebar-text hover:bg-card-muted flex w-full cursor-pointer items-center gap-3 rounded-xl px-5 py-4 text-sm transition-colors">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => SetIsModalOpen(false)}
+          title="로그아웃"
+          description="로그아웃 하시겠습니까?"
+          confirmLabel="로그아웃"
+          cancelLabel="취소"
+          onConfirm={() => logoutAction()}
+        />
+        <button
+          type="button"
+          onClick={() => SetIsModalOpen(true)}
+          className="text-sidebar-text hover:bg-card-muted flex w-full cursor-pointer items-center gap-3 rounded-xl px-5 py-4 text-sm transition-colors"
+        >
           <LogOut size={20} />
           로그아웃
         </button>
