@@ -5,7 +5,7 @@ import { Pill, Plus } from 'lucide-react';
 // 리스트 렌더링 시에 퍼블리싱 + 로직 함께 작성
 export default function TodayMedicines() {
   return (
-    <div className="bg-card border-card-muted min-h-100 flex-1 rounded-2xl border p-6">
+    <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl">오늘 복용할 약</h2>
         <button

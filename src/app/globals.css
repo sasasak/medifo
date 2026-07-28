@@ -73,11 +73,11 @@
   /* base : 본문 텍스트 - 또렷 */
   /* muted : 보조 텍스트 - 약간 흐림 */
   /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
-  --color-page: #f0fdf9;
-  --color-card: #ffffff;
+  --color-page: #e8f5f0;
+  --color-card: #f8fffe;
   --color-card-muted: #f0fdf9;
   --color-card-border: #e1f5ee;
-  --color-border-light: #1d9e75;
+  --color-border-light: #9fe1cb;
   --color-border-focus: #1d9e75;
   --color-text-muted: #1d9e75;
   --color-button: #1d9e75;
@@ -99,7 +99,7 @@
   --color-card: #085041;
   --color-card-muted: #0f6e56;
   --color-card-border: #0f6e56;
-  --color-border-light: #53bf9b;
+  --color-border-light: #0f6e56;
   --color-border-focus: #9fe1cb;
   --color-text-base: #d3f5ee;
   --color-button: #5dcaa5;
