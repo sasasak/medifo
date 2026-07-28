@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import HomeHeader from './_components/HomeHeader';
 import TodayMedicines from './_components/TodayMedicines';
 import MedicineCalendar from './_components/MedicineCalendar';
+import MedicineWarnings from './_components/MedicineWarning';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -22,17 +23,14 @@ export default async function Home() {
   });
 
   return (
-    <section>
+    <section className="mx-6">
       <HomeHeader nickname={data?.nickname} date={date} />
 
-      <div className="mt-6 flex gap-6">
+      <div className="border-border-light mt-6 flex gap-6 border-t pt-6">
         <TodayMedicines />
         <MedicineCalendar />
       </div>
-      {/* 추후에 
       <MedicineWarnings />
-      조립 
-      */}
     </section>
   );
 }
