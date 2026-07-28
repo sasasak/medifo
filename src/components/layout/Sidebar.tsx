@@ -21,7 +21,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isModalOpen, SetIsModalOpen] = useState(false);
   return (
-    <aside className="bg-card hidden min-h-screen w-full max-w-60 flex-col justify-between md:flex">
+    <aside className="bg-sidebar hidden min-h-screen w-full max-w-60 flex-col justify-between text-white md:flex">
       <div>
         <div className="mx-6 my-6 flex items-center gap-3">
           <div className="bg-sidebar-active flex h-12 w-12 items-center justify-center rounded-xl">
