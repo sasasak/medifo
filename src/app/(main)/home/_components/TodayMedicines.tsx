@@ -7,7 +7,7 @@ export default function TodayMedicines() {
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl">오늘 복용할 약</h2>
+        <h2 className="text-xl font-semibold">오늘 복용할 약</h2>
         <button
           type="button"
           className="hover:bg-card-muted border-border-light text-text-muted flex cursor-pointer items-center gap-1 rounded-4xl border p-3 text-sm transition-colors"

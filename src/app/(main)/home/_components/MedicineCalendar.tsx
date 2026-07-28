@@ -20,7 +20,7 @@ export default function MedicineCalendar() {
 
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
-      <h2 className="text-xl">이번 달 복용 현황</h2>
+      <h2 className="text-xl font-semibold">이번 달 복용 현황</h2>
       <div className="mt-4 flex items-center justify-between">
         <span className="text-sm">
           {year}년 {month + 1}월
