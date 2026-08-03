@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import RecentSearches from './_components/RecentSearches';
 import SearchBar from './_components/SearchBar';
 import PopularMedicines from './_components/PopularMedicines';
+import SearchResults from './_components/SearchResults';
 
 interface SearchClientProps {
   userId: string;
@@ -33,7 +34,7 @@ export default function SearchClient({ userId }: SearchClientProps) {
         refetchRef={refetchRef}
       />
       <PopularMedicines />
-      {query && <div>{/* 나중에 검색 결과 컴포넌트 */}</div>}
+      {query && <SearchResults query={query} />}
     </div>
   );
 }
