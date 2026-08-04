@@ -41,7 +41,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
   return (
     <div>
       <p>{results.length}건의 결과</p>
-      <div>
+      <div className="py-3">
         {results.length === 0 ? (
           <p>검색 결과가 존재하지 않습니다.</p>
         ) : (
