@@ -1,4 +1,5 @@
 import { Pill } from 'lucide-react';
+import Link from 'next/link';
 
 interface MedicineCardProps {
   id: string;
@@ -23,13 +24,21 @@ export default function MedicineCard({
         <span className="text-text-muted">{manufacturer}</span>
         <span className="text-text-hint text-sm">{efficacy}</span>
       </div>
-      {/* TODO: 추후 복용 약 등록 기능 연결  */}
-      <button
-        type="button"
-        className="border-border-focus hover:bg-card-muted shrink-0 cursor-pointer rounded-full border px-4 py-2"
-      >
-        등록
-      </button>
+      <div className="flex gap-3">
+        <Link
+          href={`/search/${id}`}
+          className="border-border-light text-card bg-hover-color hover:bg-card-muted hover:text-text-base flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
+        >
+          상세보기
+        </Link>
+        {/* TODO: 추후 복용 약 등록 기능 연결  */}
+        <button
+          type="button"
+          className="border-border-light hover:bg-card-muted shrink-0 cursor-pointer rounded-full border px-4 py-2 font-semibold transition-colors"
+        >
+          등록
+        </button>
+      </div>
     </div>
   );
 }
