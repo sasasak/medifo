@@ -34,7 +34,7 @@ export default function MedicineCard({
         {/* TODO: 추후 복용 약 등록 기능 연결  */}
         <button
           type="button"
-          className="border-border-light hover:bg-card-muted shrink-0 cursor-pointer rounded-full border px-4 py-2 font-semibold transition-colors"
+          className="text-text-muted border-border-light hover:bg-card-muted shrink-0 cursor-pointer rounded-full border px-4 py-2 font-semibold transition-colors"
         >
           등록
         </button>

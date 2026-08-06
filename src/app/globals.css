@@ -66,6 +66,7 @@
   --color-sidebar-text: var(--color-sidebar-text);
   --color-sidebar: var(--color-sidebar);
   --color-border-light: var(--color-border-light);
+  --color-danger-border: var(--color-danger-border);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
@@ -85,6 +86,7 @@
   --color-sidebar-active: #1d9e75;
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
+  --color-danger-border: #e24b4a;
 }
 /* ─── 다크 모드 ────────────────────────────────────────── */
 .dark {
@@ -106,6 +108,7 @@
   --color-sidebar-active: #1d9e75;
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
+  --color-danger-border: #0f6e56;
 }
 
 /* ─── 전역 기본 스타일 ─────────────────────────────────── */
