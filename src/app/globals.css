@@ -34,7 +34,7 @@
   --color-danger-950: #501313;
 
   /* 주의 */
-  --color-warning-50: #faeeda;
+  --color-warning-50: #fad98a;
   --color-warning-200: #fac775;
   --color-warning-400: #ef9f27;
   --color-warning-950: #412402;
@@ -109,6 +109,11 @@
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
   --color-danger-border: #0f6e56;
+}
+
+.dark .warning-bg {
+  background-color: var(--color-card);
+  border-color: var(--color-border-light);
 }
 
 /* ─── 전역 기본 스타일 ─────────────────────────────────── */

@@ -1,35 +1,49 @@
 'use client';
 
-import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
 interface AccordionItemProps {
   title: string;
   content: string;
+  variant?: 'default' | 'warning';
 }
 
-function AccordionItem({ title, content }: AccordionItemProps) {
+function AccordionItem({
+  title,
+  content,
+  variant = 'default',
+}: AccordionItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="bg-card border-border-light rounded-2xl border p-4">
+    <div
+      className={`rounded-2xl border p-4 ${
+        variant === 'warning'
+          ? 'bg-warning-50/50 border-warning-200 warning-bg'
+          : 'bg-card border-border-light'
+      }`}
+    >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full cursor-pointer items-center justify-between"
       >
-        <span className="font-bold">{title}</span>
+        <span
+          className={`font-bold ${variant === 'warning' ? 'text-warning-400' : ''}`}
+        >
+          {title}
+        </span>
         {isOpen ? (
-          <ChevronDown size={18} className="text-text-muted" />
+          <ChevronUp size={18} className="text-text-muted" />
         ) : (
-          <ChevronRight size={18} className="text-text-muted" />
+          <ChevronDown size={18} className="text-text-muted" />
         )}
       </button>
       {isOpen && <p className="text-text-muted mt-3 text-sm">{content}</p>}
     </div>
   );
 }
-
 interface MedicineAccordionProps {
   efficacy: string;
   usage: string;
@@ -48,8 +62,8 @@ export default function MedicineAccordionProps({
   const items = [
     { title: '효능/효과', content: efficacy },
     { title: '복용 방법', content: usage },
-    { title: '주의사항', content: precautions },
-    { title: '부작용', content: sideEffects },
+    { title: '주의사항', content: precautions, variant: 'warning' as const },
+    { title: '부작용', content: sideEffects, variant: 'warning' as const },
   ];
 
   return (
@@ -60,6 +74,7 @@ export default function MedicineAccordionProps({
             key={item.title}
             title={item.title}
             content={item.content}
+            variant={item.variant}
           />
         ))}
       </div>
