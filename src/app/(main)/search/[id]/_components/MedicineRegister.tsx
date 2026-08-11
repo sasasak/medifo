@@ -1,7 +1,8 @@
 'use client';
 
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import TimeItem from './TimeItem';
 
 export default function MedicineRegister() {
   // 1. 초기 상태를 빈 배열([])로 수정
@@ -35,22 +36,13 @@ export default function MedicineRegister() {
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {times.map((time, index) => (
-          // React 리스트 렌더링에 필요한 key 속성 추가
-          <div key={index} className="flex items-center gap-1">
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => handleTimeChange(index, e.target.value)}
-              className="border-border-light rounded-lg border p-2 text-sm"
-            />
-            <button
-              type="button"
-              onClick={() => handleRemoveTime(index)}
-              className="text-text-muted cursor-pointer px-1"
-            >
-              <X size={16} />
-            </button>
-          </div>
+          <TimeItem
+            key={index}
+            time={time}
+            index={index}
+            onChange={handleTimeChange}
+            onRemove={handleRemoveTime}
+          />
         ))}
       </div>
       {/* TODO: 추후 복용 약 등록 로직 연결 */}

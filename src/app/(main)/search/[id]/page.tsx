@@ -1,0 +1,44 @@
+import { createClient } from '@/utils/supabase/server';
+import { notFound } from 'next/navigation';
+import MedicineInfo from './_components/MedicineInfo';
+import MedicineAccordion from './_components/MedicineAccordion';
+import ContraindicationAlert from './_components/ContraindicationAlert';
+import MedicineRegister from './_components/MedicineRegister';
+
+interface SearchDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function SearchDetailPage({
+  params,
+}: SearchDetailPageProps) {
+  const { id } = await params;
+
+  const supabase = await createClient();
+  const { data: medicine } = await supabase
+    .from('medicines')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (!medicine) notFound();
+
+  return (
+    <section className="p-6">
+      <MedicineInfo
+        name={medicine.name}
+        manufacturer={medicine.manufacturer}
+        efficacy={medicine.efficacy}
+      />
+      <ContraindicationAlert contraindications={medicine.contraindications} />
+      <MedicineAccordion
+        efficacy={medicine.efficacy}
+        usage={medicine.usage}
+        precautions={medicine.precautions}
+        sideEffects={medicine.side_effects}
+        storage={medicine.storage}
+      />
+      <MedicineRegister />
+    </section>
+  );
+}
