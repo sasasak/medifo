@@ -34,7 +34,7 @@
   --color-danger-950: #501313;
 
   /* 주의 */
-  --color-warning-50: #faeeda;
+  --color-warning-50: #fad98a;
   --color-warning-200: #fac775;
   --color-warning-400: #ef9f27;
   --color-warning-950: #412402;
@@ -66,30 +66,28 @@
   --color-sidebar-text: var(--color-sidebar-text);
   --color-sidebar: var(--color-sidebar);
   --color-border-light: var(--color-border-light);
+  --color-danger-border: var(--color-danger-border);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
 :root {
-  /* base : 본문 텍스트 - 또렷 */
-  /* muted : 보조 텍스트 - 약간 흐림 */
-  /* hint : placeholder, 캡션, 비활성 텍스트 등등 - 가장 흐림 */
-  --color-page: #f0fdf9;
-  --color-card: #ffffff;
-  --color-card-muted: #f0fdf9;
-  --color-card-border: #e1f5ee;
-  --color-border-light: #c5f1e4;
+  --color-page: #e8f5f0;
+  --color-card: #f5fdfb;
+  --color-card-muted: #ddf0ea;
+  --color-card-border: #c5e8dc;
+  --color-border-light: #a8d5c5;
   --color-border-focus: #1d9e75;
-  --color-text-muted: #1d9e75;
+  --color-text-muted: #1a8a65;
   --color-button: #1d9e75;
   --color-text-base: #04342c;
-  --color-text-hint: #5dcaa5;
+  --color-text-hint: #4db896;
   --color-text-reverse-base: #f0fdf9;
   --color-hover-color: #0f6e56;
   --color-sidebar-active: #1d9e75;
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
+  --color-danger-border: #e24b4a;
 }
-
 /* ─── 다크 모드 ────────────────────────────────────────── */
 .dark {
   /* base : 본문 텍스트 - 또렷 */
@@ -110,6 +108,12 @@
   --color-sidebar-active: #1d9e75;
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
+  --color-danger-border: #0f6e56;
+}
+
+.dark .warning-bg {
+  background-color: var(--color-card);
+  border-color: var(--color-border-light);
 }
 
 /* ─── 전역 기본 스타일 ─────────────────────────────────── */
