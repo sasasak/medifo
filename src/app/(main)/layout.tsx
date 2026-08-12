@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar />
-      <main className="flex-1 p-6">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 p-6">{children}</main>
     </div>
   );
 }
