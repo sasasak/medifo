@@ -14,6 +14,7 @@ export default async function MyMedicinesPage() {
     .select(
       `
       id,
+      medicine_id,
       dosage,
       frequency,
       times,
@@ -41,6 +42,7 @@ export default async function MyMedicinesPage() {
           <UserMedicineCard
             key={medicine.id}
             id={medicine.id}
+            medicineId={medicine.medicine_id}
             name={
               (medicine.medicines as unknown as { name: string } | null)
                 ?.name ?? ''
