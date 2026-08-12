@@ -26,7 +26,7 @@ export default function MedicineCard({
       </div>
       <div className="flex gap-3">
         <Link
-          href={`/search/${id}`}
+          href={`/medicine/${id}`}
           className="border-border-light text-card bg-hover-color hover:bg-card-muted hover:text-text-base flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
         >
           상세보기

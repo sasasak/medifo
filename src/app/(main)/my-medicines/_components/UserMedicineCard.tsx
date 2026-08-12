@@ -21,7 +21,7 @@ export default function UserMedicineCard({
   dosage,
 }: UserMedicineCardProps) {
   return (
-    <Link href={`/search/${medicineId}`}>
+    <Link href={`/medicine/${medicineId}`}>
       <div className="bg-card border-border-light hover:bg-card-muted cursor-pointer rounded-2xl border p-4 transition-colors">
         <div className="flex items-center justify-between">
           <span className="font-bold">{name}</span>
