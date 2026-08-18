@@ -26,6 +26,17 @@ export default async function MedicineDetailPage({
 
   if (!medicine) notFound();
 
+  const { data: existingMedicine } = await supabase
+    .from('user_medicines')
+    .select('id, times, frequency')
+    .eq('user_id', user?.id)
+    .eq('medicine_id', id)
+    .limit(1)
+    .single();
+
+  console.log('existingMedicine:', existingMedicine);
+  console.log('type:', typeof existingMedicine);
+
   return (
     <section className="p-6">
       <MedicineInfo
@@ -41,7 +52,11 @@ export default async function MedicineDetailPage({
         sideEffects={medicine.side_effects}
         storage={medicine.storage}
       />
-      <MedicineRegister medicineId={id} userId={user?.id ?? ''} />
+      <MedicineRegister
+        medicineId={id}
+        userId={user?.id ?? ''}
+        existingData={existingMedicine}
+      />
     </section>
   );
 }

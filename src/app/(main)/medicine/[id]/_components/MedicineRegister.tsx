@@ -2,22 +2,34 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
 
 interface MedicineRegisterProps {
   medicineId: string;
   userId: string;
+  existingData?: {
+    id: string;
+    times: string[];
+    frequency: string;
+  } | null;
 }
 
 export default function MedicineRegister({
   medicineId,
   userId,
+  existingData,
 }: MedicineRegisterProps) {
   const [times, setTimes] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    if (existingData?.times) {
+      setTimes(existingData.times);
+    }
+  }, [existingData]);
 
   const handleAddTime = () => {
     setTimes((prev) => [...prev, '']);
@@ -45,17 +57,30 @@ export default function MedicineRegister({
     setErrorMessage('');
 
     const supabase = createClient();
-    const { error } = await supabase.from('user_medicines').insert({
-      user_id: userId,
-      medicine_id: medicineId,
-      frequency: '매일',
-      times: times,
-      is_active: true,
-    });
 
-    if (error) {
-      setErrorMessage('등록에 실패했습니다. 다시 시도해주세요.');
-      return;
+    if (existingData) {
+      const { error } = await supabase
+        .from('user_medicines')
+        .update({ times, frequency: '매일' })
+        .eq('id', existingData.id);
+
+      if (error) {
+        setErrorMessage('수정에 실패했습니다. 다시 시도해주세요.');
+        return;
+      }
+    } else {
+      const { error } = await supabase.from('user_medicines').insert({
+        user_id: userId,
+        medicine_id: medicineId,
+        frequency: '매일',
+        times,
+        is_active: true,
+      });
+
+      if (error) {
+        setErrorMessage('등록에 실패했습니다. 다시 시도해주세요.');
+        return;
+      }
     }
 
     router.push('/my-medicines?registered=true');
@@ -93,7 +118,7 @@ export default function MedicineRegister({
         onClick={handleRegister}
         className="bg-button text-text-reverse-base hover:bg-hover-color mt-4 w-full cursor-pointer rounded-full py-4 font-bold transition-colors"
       >
-        + 복용 약에 추가
+        {existingData ? '+ 복용 시간 수정' : '+ 복용 약에 추가'}
       </button>
     </div>
   );
