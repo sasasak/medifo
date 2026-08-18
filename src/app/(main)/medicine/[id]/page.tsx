@@ -13,8 +13,11 @@ export default async function MedicineDetailPage({
   params,
 }: MedicineDetailPageProps) {
   const { id } = await params;
-
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: medicine } = await supabase
     .from('medicines')
     .select('*')
@@ -38,7 +41,7 @@ export default async function MedicineDetailPage({
         sideEffects={medicine.side_effects}
         storage={medicine.storage}
       />
-      <MedicineRegister />
+      <MedicineRegister medicineId={id} userId={user?.id ?? ''} />
     </section>
   );
 }

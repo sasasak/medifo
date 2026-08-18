@@ -1,14 +1,24 @@
 'use client';
 
+import { createClient } from '@/utils/supabase/client';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import TimeItem from './TimeItem';
+import { useRouter } from 'next/navigation';
 
-export default function MedicineRegister() {
-  // 1. 초기 상태를 빈 배열([])로 수정
+interface MedicineRegisterProps {
+  medicineId: string;
+  userId: string;
+}
+
+export default function MedicineRegister({
+  medicineId,
+  userId,
+}: MedicineRegisterProps) {
   const [times, setTimes] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
 
-  // 2. 시간 추가 시 고정값('08:00') 대신 빈 문자열('')을 추가하여 직접 선택 가능하게 변경
   const handleAddTime = () => {
     setTimes((prev) => [...prev, '']);
   };
@@ -19,6 +29,36 @@ export default function MedicineRegister() {
 
   const handleTimeChange = (index: number, value: string) => {
     setTimes((prev) => prev.map((t, i) => (i === index ? value : t)));
+  };
+
+  const handleRegister = async () => {
+    if (times.length === 0) {
+      setErrorMessage('복용 시간을 추가해주세요.');
+      return;
+    }
+
+    if (times.some((time) => !time)) {
+      setErrorMessage('복용 시간을 설정해주세요.');
+      return;
+    }
+
+    setErrorMessage('');
+
+    const supabase = createClient();
+    const { error } = await supabase.from('user_medicines').insert({
+      user_id: userId,
+      medicine_id: medicineId,
+      frequency: '매일',
+      times: times,
+      is_active: true,
+    });
+
+    if (error) {
+      setErrorMessage('등록에 실패했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    router.push('/my-medicines?registered=true');
   };
 
   return (
@@ -45,9 +85,12 @@ export default function MedicineRegister() {
           />
         ))}
       </div>
-      {/* TODO: 추후 복용 약 등록 로직 연결 */}
+      {errorMessage && (
+        <p className="text-danger-400 mt-2 text-sm">{errorMessage}</p>
+      )}
       <button
         type="button"
+        onClick={handleRegister}
         className="bg-button text-text-reverse-base hover:bg-hover-color mt-4 w-full cursor-pointer rounded-full py-4 font-bold transition-colors"
       >
         + 복용 약에 추가
