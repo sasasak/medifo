@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import UserMedicineCard from './_components/UserMedicineCard';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import MyMedicineClient from './MyMedicidinesClient';
 
 export default async function MyMedicinesPage() {
   const supabase = await createClient();
@@ -28,6 +29,7 @@ export default async function MyMedicinesPage() {
 
   return (
     <section className="p-6">
+      <MyMedicineClient />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">내 복용 약</h1>
         <Link
