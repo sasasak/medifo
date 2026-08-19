@@ -4,6 +4,7 @@ import MedicineInfo from './_components/MedicineInfo';
 import MedicineAccordion from './_components/MedicineAccordion';
 import ContraindicationAlert from './_components/ContraindicationAlert';
 import MedicineRegister from './_components/MedicineRegister';
+import BackButton from './_components/BackButton';
 
 interface MedicineDetailPageProps {
   params: Promise<{ id: string }>;
@@ -36,6 +37,7 @@ export default async function MedicineDetailPage({
 
   return (
     <section className="p-6">
+      <BackButton name={medicine.name} />
       <MedicineInfo
         name={medicine.name}
         manufacturer={medicine.manufacturer}
