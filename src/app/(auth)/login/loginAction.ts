@@ -4,8 +4,6 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
 export const loginAction = async (_: unknown, formData: FormData) => {
-  console.log('loginAction 호출됨', formData.get('email')); // 임시 디버깅
-
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
