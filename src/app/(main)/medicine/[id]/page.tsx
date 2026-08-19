@@ -34,9 +34,6 @@ export default async function MedicineDetailPage({
     .limit(1)
     .single();
 
-  console.log('existingMedicine:', existingMedicine);
-  console.log('type:', typeof existingMedicine);
-
   return (
     <section className="p-6">
       <MedicineInfo
