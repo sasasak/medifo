@@ -15,7 +15,7 @@ type RecentSearch = { id: string; term: string };
 interface RecentSearchesProps {
   userId: string;
   query: string;
-  setQuery: Dispatch<SetStateAction<string>>;
+  setQuery: (term: string) => void;
   refetchRef: RefObject<(() => void) | null>;
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import RecentSearches from './_components/RecentSearches';
 import SearchBar from './_components/SearchBar';
 import PopularMedicines from './_components/PopularMedicines';
@@ -11,33 +12,33 @@ interface SearchClientProps {
 }
 
 export default function SearchClient({ userId }: SearchClientProps) {
-  //  입력창에 입력 중인 텍스트
-  const [query, setQuery] = useState('');
-  // 검색(Enter)이 실제 실행된 텍스트
-  const [searchedQuery, setSearchedQuery] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 입력창 텍스트 - 로컬 상태 (뒤로가기 시 URL의 검색어 반영)
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  // 실제 검색된 텍스트 - URL 쿼리
+  const searchedQuery = searchParams.get('q') ?? '';
 
   const refetchRef = useRef<(() => void) | null>(null);
 
-  // 검색 실행(SearchBar 에서 Enter 입력 시 호출)
   const handleSearch = async () => {
     if (!query.trim()) return;
-    // 최근 검색어 목록 갱신
+    router.replace(`/search?q=${encodeURIComponent(query.trim())}`);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     refetchRef.current?.();
-    setSearchedQuery(query.trim()); // 검색 시점에 업데이트
   };
 
-  // 최근 검색어 클릭 시 바로 검색되도록 처리
-  const handleSelectRecentTerm = (term: string) => {
-    setQuery(term);
-    setSearchedQuery(term);
-  };
-
-  // 입력창 텍스트 변경 감지(다 지웠을 때 메인 화면으로 복귀)
   const handleQueryChange = (val: string) => {
     setQuery(val);
     if (!val.trim()) {
-      setSearchedQuery('');
+      router.replace('/search');
     }
+  };
+
+  const handleSelectRecentTerm = (term: string) => {
+    setQuery(term);
+    router.replace(`/search?q=${encodeURIComponent(term)}`);
   };
 
   return (
@@ -55,7 +56,7 @@ export default function SearchClient({ userId }: SearchClientProps) {
           <RecentSearches
             userId={userId}
             query={query}
-            setQuery={setQuery}
+            setQuery={handleSelectRecentTerm}
             refetchRef={refetchRef}
           />
           <PopularMedicines />
