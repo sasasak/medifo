@@ -27,17 +27,10 @@ export default function MedicineCard({
       <div className="flex gap-3">
         <Link
           href={`/medicine/${id}`}
-          className="border-border-light text-card bg-hover-color hover:bg-card-muted hover:text-text-base flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
-        >
-          상세보기
-        </Link>
-        {/* TODO: 추후 복용 약 등록 기능 연결  */}
-        <button
-          type="button"
-          className="text-text-muted border-border-light hover:bg-card-muted shrink-0 cursor-pointer rounded-full border px-4 py-2 font-semibold transition-colors"
+          className="bg-button text-text-reverse-base hover:bg-hover-color flex cursor-pointer items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-colors"
         >
           등록
-        </button>
+        </Link>
       </div>
     </div>
   );
