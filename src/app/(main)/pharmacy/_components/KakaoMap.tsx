@@ -10,13 +10,50 @@ declare global {
 
 interface KakaoMapProps {
   searchQuery: string;
+  selectedPlace: { name: string; x: string; y: string } | null;
+  onPharmaciesFound: (pharmacies: any[]) => void;
 }
 
-export default function KakaoMap({ searchQuery }: KakaoMapProps) {
+export default function KakaoMap({
+  searchQuery,
+  selectedPlace,
+  onPharmaciesFound,
+}: KakaoMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
 
-  // 지도 초기화 (최초 1번)
+  const clearMarkers = () => {
+    markersRef.current.forEach((marker) => marker.setMap(null));
+    markersRef.current = [];
+  };
+
+  const searchPharmacy = (latitude: number, longitude: number) => {
+    if (!mapInstanceRef.current) return;
+
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(
+      '약국',
+      (data: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          clearMarkers();
+          data.forEach((place: any) => {
+            const marker = new window.kakao.maps.Marker({
+              map: mapInstanceRef.current,
+              position: new window.kakao.maps.LatLng(place.y, place.x),
+            });
+            markersRef.current.push(marker);
+          });
+          onPharmaciesFound(data);
+        }
+      },
+      {
+        location: new window.kakao.maps.LatLng(latitude, longitude),
+        radius: 1000,
+      },
+    );
+  };
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&libraries=services&autoload=false`;
@@ -25,6 +62,7 @@ export default function KakaoMap({ searchQuery }: KakaoMapProps) {
 
     script.onload = () => {
       window.kakao.maps.load(() => {
+        window.dispatchEvent(new Event('kakaoLoaded'));
         if (!mapRef.current) return;
 
         const initMap = (latitude: number, longitude: number) => {
@@ -36,12 +74,6 @@ export default function KakaoMap({ searchQuery }: KakaoMapProps) {
             mapRef.current,
             options,
           );
-
-          new window.kakao.maps.Marker({
-            map: mapInstanceRef.current,
-            position: new window.kakao.maps.LatLng(latitude, longitude),
-          });
-
           searchPharmacy(latitude, longitude);
         };
 
@@ -58,29 +90,17 @@ export default function KakaoMap({ searchQuery }: KakaoMapProps) {
     };
   }, []);
 
-  // 약국 검색 함수
-  const searchPharmacy = (latitude: number, longitude: number) => {
-    if (!mapInstanceRef.current) return;
+  // selectedPlace 변경 시 지도 이동 및 약국 검색
+  useEffect(() => {
+    if (!selectedPlace || !mapInstanceRef.current) return;
 
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(
-      '약국',
-      (data: any, status: any) => {
-        if (status === window.kakao.maps.services.Status.OK) {
-          data.forEach((place: any) => {
-            new window.kakao.maps.Marker({
-              map: mapInstanceRef.current,
-              position: new window.kakao.maps.LatLng(place.y, place.x),
-            });
-          });
-        }
-      },
-      {
-        location: new window.kakao.maps.LatLng(latitude, longitude),
-        radius: 1000,
-      },
+    const newCenter = new window.kakao.maps.LatLng(
+      selectedPlace.y,
+      selectedPlace.x,
     );
-  };
+    mapInstanceRef.current.setCenter(newCenter);
+    searchPharmacy(Number(selectedPlace.y), Number(selectedPlace.x));
+  }, [selectedPlace]);
 
   // searchQuery 변경 시 지역 검색
   useEffect(() => {
@@ -95,7 +115,7 @@ export default function KakaoMap({ searchQuery }: KakaoMapProps) {
           firstPlace.x,
         );
         mapInstanceRef.current.setCenter(newCenter);
-        searchPharmacy(firstPlace.y, firstPlace.x);
+        searchPharmacy(Number(firstPlace.y), Number(firstPlace.x));
       }
     });
   }, [searchQuery]);
