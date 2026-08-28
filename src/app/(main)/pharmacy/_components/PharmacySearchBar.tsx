@@ -3,21 +3,34 @@
 import { Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
+interface SelectedPlace {
+  id: string;
+  name: string;
+  x: string;
+  y: string;
+  place_name: string;
+  address_name: string;
+  phone: string;
+}
+
 interface PharmacySearchBarProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
-  onSelectPlace: (place: { name: string; x: string; y: string }) => void;
+  onSelectPlace: (place: SelectedPlace) => void;
+  onSearch: () => void;
 }
 
 export default function PharmacySearchBar({
   searchQuery,
   setSearchQuery,
   onSelectPlace,
+  onSearch,
 }: PharmacySearchBarProps) {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const psRef = useRef<any>(null);
+  const isSelectingRef = useRef(false);
 
   useEffect(() => {
     const initPs = () => {
@@ -35,6 +48,11 @@ export default function PharmacySearchBar({
   }, []);
 
   useEffect(() => {
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
+
     if (!searchQuery.trim() || !psRef.current) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -57,15 +75,29 @@ export default function PharmacySearchBar({
   }, [searchQuery]);
 
   const handleSelect = (place: any) => {
+    isSelectingRef.current = true;
     setSearchQuery(place.place_name);
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveIndex(-1);
-    onSelectPlace({ name: place.place_name, x: place.x, y: place.y });
+    onSelectPlace({
+      id: place.id,
+      name: place.place_name,
+      x: place.x,
+      y: place.y,
+      place_name: place.place_name,
+      address_name: place.address_name,
+      phone: place.phone,
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!showSuggestions || suggestions.length === 0) return;
+    if (!showSuggestions || suggestions.length === 0) {
+      if (e.key === 'Enter') {
+        onSearch();
+      }
+      return;
+    }
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -75,9 +107,14 @@ export default function PharmacySearchBar({
       setActiveIndex(
         (prev) => (prev - 1 + suggestions.length) % suggestions.length,
       );
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      handleSelect(suggestions[activeIndex]);
+      if (activeIndex >= 0) {
+        handleSelect(suggestions[activeIndex]);
+      } else {
+        setShowSuggestions(false);
+        onSearch();
+      }
     } else if (e.key === 'Escape') {
       setShowSuggestions(false);
     }
