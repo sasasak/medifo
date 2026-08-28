@@ -8,14 +8,24 @@ declare global {
   }
 }
 
+interface SelectedPlace {
+  id: string;
+  name: string;
+  x: string;
+  y: string;
+  place_name: string;
+  address_name: string;
+  phone: string;
+}
+
 interface KakaoMapProps {
-  searchQuery: string;
-  selectedPlace: { name: string; x: string; y: string } | null;
+  confirmedQuery: string;
+  selectedPlace: SelectedPlace | null;
   onPharmaciesFound: (pharmacies: any[]) => void;
 }
 
 export default function KakaoMap({
-  searchQuery,
+  confirmedQuery,
   selectedPlace,
   onPharmaciesFound,
 }: KakaoMapProps) {
@@ -28,6 +38,7 @@ export default function KakaoMap({
     markersRef.current = [];
   };
 
+  // 지역 검색 시 - 반경 내 약국 전체 표시
   const searchPharmacy = (latitude: number, longitude: number) => {
     if (!mapInstanceRef.current) return;
 
@@ -38,17 +49,114 @@ export default function KakaoMap({
         if (status === window.kakao.maps.services.Status.OK) {
           clearMarkers();
           data.forEach((place: any) => {
+            const position = new window.kakao.maps.LatLng(place.y, place.x);
             const marker = new window.kakao.maps.Marker({
               map: mapInstanceRef.current,
-              position: new window.kakao.maps.LatLng(place.y, place.x),
+              position,
             });
             markersRef.current.push(marker);
+
+            const overlay = new window.kakao.maps.CustomOverlay({
+              map: mapInstanceRef.current,
+              position,
+              content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c;">${place.place_name}</div>`,
+              yAnchor: 2.5,
+            });
+            markersRef.current.push(overlay);
           });
           onPharmaciesFound(data);
         }
       },
       {
         location: new window.kakao.maps.LatLng(latitude, longitude),
+        radius: 1000,
+      },
+    );
+  };
+
+  // 약국 직접 선택 시 - 선택한 약국 + 주변 3개
+  const searchNearbyPharmacy = (selectedPlace: SelectedPlace) => {
+    if (!mapInstanceRef.current) return;
+
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(
+      '약국',
+      (data: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          clearMarkers();
+
+          // 선택한 약국 마커 (기본 크기)
+          const selectedPosition = new window.kakao.maps.LatLng(
+            selectedPlace.y,
+            selectedPlace.x,
+          );
+          const selectedMarker = new window.kakao.maps.Marker({
+            map: mapInstanceRef.current,
+            position: selectedPosition,
+          });
+          markersRef.current.push(selectedMarker);
+
+          const selectedOverlay = new window.kakao.maps.CustomOverlay({
+            map: mapInstanceRef.current,
+            position: selectedPosition,
+            content: `<div style="background: #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: white; font-weight: bold;">${selectedPlace.place_name}</div>`,
+            yAnchor: 2.5,
+          });
+          markersRef.current.push(selectedOverlay);
+
+          // 주변 약국 3개 마커 (작은 크기)
+          const smallMarkerSize = new window.kakao.maps.Size(16, 24);
+          const smallMarkerImage = new window.kakao.maps.MarkerImage(
+            'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png',
+            smallMarkerSize,
+          );
+
+          const nearby = data
+            .filter((p: any) => p.id !== selectedPlace.id)
+            .slice(0, 3);
+
+          nearby.forEach((place: any) => {
+            const position = new window.kakao.maps.LatLng(place.y, place.x);
+            const marker = new window.kakao.maps.Marker({
+              map: mapInstanceRef.current,
+              position,
+              image: smallMarkerImage,
+            });
+            markersRef.current.push(marker);
+
+            const overlay = new window.kakao.maps.CustomOverlay({
+              map: mapInstanceRef.current,
+              position,
+              content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 11px; white-space: nowrap; color: #04342c;">${place.place_name}</div>`,
+              yAnchor: 2.5,
+            });
+            markersRef.current.push(overlay);
+          });
+
+          // 선택한 약국 + 주변 3개 리스트
+          onPharmaciesFound([
+            {
+              id: selectedPlace.id,
+              place_name: selectedPlace.place_name,
+              address_name: selectedPlace.address_name,
+              phone: selectedPlace.phone,
+              distance: '',
+            },
+            ...nearby.map((p: any) => ({
+              id: p.id,
+              place_name: p.place_name,
+              address_name: p.address_name,
+              phone: p.phone,
+              distance: p.distance,
+            })),
+          ]);
+        }
+      },
+      {
+        location: new window.kakao.maps.LatLng(
+          selectedPlace.y,
+          selectedPlace.x,
+        ),
         radius: 1000,
       },
     );
@@ -74,7 +182,7 @@ export default function KakaoMap({
             mapRef.current,
             options,
           );
-          searchPharmacy(latitude, longitude);
+          // 초기에는 약국 검색 안 함
         };
 
         navigator.geolocation.getCurrentPosition(
@@ -90,7 +198,7 @@ export default function KakaoMap({
     };
   }, []);
 
-  // selectedPlace 변경 시 지도 이동 및 약국 검색
+  // 약국 직접 선택 시
   useEffect(() => {
     if (!selectedPlace || !mapInstanceRef.current) return;
 
@@ -99,15 +207,15 @@ export default function KakaoMap({
       selectedPlace.x,
     );
     mapInstanceRef.current.setCenter(newCenter);
-    searchPharmacy(Number(selectedPlace.y), Number(selectedPlace.x));
+    searchNearbyPharmacy(selectedPlace);
   }, [selectedPlace]);
 
-  // searchQuery 변경 시 지역 검색
+  // 지역 검색 시
   useEffect(() => {
-    if (!searchQuery.trim() || !mapInstanceRef.current) return;
+    if (!confirmedQuery.trim() || !mapInstanceRef.current) return;
 
     const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(searchQuery + ' 약국', (data: any, status: any) => {
+    ps.keywordSearch(confirmedQuery + ' 약국', (data: any, status: any) => {
       if (status === window.kakao.maps.services.Status.OK) {
         const firstPlace = data[0];
         const newCenter = new window.kakao.maps.LatLng(
@@ -118,7 +226,7 @@ export default function KakaoMap({
         searchPharmacy(Number(firstPlace.y), Number(firstPlace.x));
       }
     });
-  }, [searchQuery]);
+  }, [confirmedQuery]);
 
   return <div ref={mapRef} className="h-80 w-full rounded-2xl" />;
 }
