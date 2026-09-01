@@ -55,6 +55,7 @@ export default function KakaoMap({
           const selectedMarker = new window.kakao.maps.Marker({
             map: mapInstanceRef.current,
             position: selectedPosition,
+            zIndex: 10,
           });
           markersRef.current.push(selectedMarker);
 
@@ -63,6 +64,7 @@ export default function KakaoMap({
             position: selectedPosition,
             content: `<div style="background: #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: white; font-weight: bold; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
             yAnchor: 2.5,
+            zIndex: 10,
           });
           markersRef.current.push(selectedOverlay);
 
