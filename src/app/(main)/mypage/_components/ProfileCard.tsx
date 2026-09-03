@@ -32,11 +32,12 @@ export default function ProfileCard({ nickname, email }: ProfileCardProps) {
         프로필 수정
       </button>
 
-      <ProfileEditModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        currentNickname={nickname}
-      />
+      {isEditOpen && (
+        <ProfileEditModal
+          onClose={() => setIsEditOpen(false)}
+          currentNickname={nickname}
+        />
+      )}
     </div>
   );
 }

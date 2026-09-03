@@ -5,7 +5,6 @@ import { useActionState, useEffect } from 'react';
 import { updateProfileAction } from '../updateProfileAction';
 
 interface ProfileEditModalProps {
-  isOpen: boolean;
   onClose: () => void;
   currentNickname: string;
 }
@@ -13,7 +12,6 @@ interface ProfileEditModalProps {
 const initialState = { error: '', success: false };
 
 export default function ProfileEditModal({
-  isOpen,
   onClose,
   currentNickname,
 }: ProfileEditModalProps) {
@@ -27,8 +25,6 @@ export default function ProfileEditModal({
       onClose();
     }
   }, [state.success, onClose]);
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
