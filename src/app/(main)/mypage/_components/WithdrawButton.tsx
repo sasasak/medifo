@@ -41,6 +41,7 @@ export default function WithdrawButton() {
         confirmLabel={isPending ? '처리 중...' : '탈퇴하기'}
         cancelLabel="취소"
         onConfirm={handleConfirm}
+        isConfirmDisabled={isPending}
       />
     </>
   );
