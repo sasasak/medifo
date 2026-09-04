@@ -8,6 +8,7 @@ interface ModalProps {
   confirmLabel: string;
   cancelLabel: string;
   onConfirm: () => void;
+  isConfirmDisabled?: boolean;
 }
 
 export default function Modal({
@@ -18,6 +19,7 @@ export default function Modal({
   confirmLabel = '확인',
   cancelLabel = '취소',
   onConfirm,
+  isConfirmDisabled = false,
 }: ModalProps) {
   if (!isOpen) return null;
 
@@ -42,7 +44,8 @@ export default function Modal({
           <button
             type="button"
             onClick={onConfirm}
-            className="bg-button text-text-reverse-base hover:bg-primary-100 flex-1 cursor-pointer rounded-xl py-3 text-sm font-bold transition-colors"
+            disabled={isConfirmDisabled}
+            className="bg-button text-text-reverse-base hover:bg-primary-100 flex-1 cursor-pointer rounded-xl py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           >
             {confirmLabel}
           </button>

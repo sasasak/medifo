@@ -8,6 +8,7 @@ interface InputProps {
   label: string;
   placeholder?: string;
   name: string;
+  defaultValue?: string;
 }
 
 export default function Input({
@@ -16,6 +17,7 @@ export default function Input({
   label,
   placeholder,
   name,
+  defaultValue,
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
@@ -30,6 +32,7 @@ export default function Input({
           type={isPassword && showPassword ? 'text' : type}
           placeholder={placeholder}
           name={name}
+          defaultValue={defaultValue}
           className="text-text-hint border-card-border rounded-card focus:ring-border-focus h-14 w-full border px-3 py-2 pr-12 font-medium outline-none focus:ring-1"
         />
         {isPassword && (
