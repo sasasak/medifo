@@ -1,29 +1,42 @@
 'use client';
 
-import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function MedicineCalendar() {
+interface MedicineCalendarProps {
+  year: number;
+  month: number; // 1-12
+  statusByDate: Record<string, 'green' | 'red'>;
+}
+
+export default function MedicineCalendar({
+  year,
+  month,
+  statusByDate,
+}: MedicineCalendarProps) {
+  const router = useRouter();
   const today = new Date();
-  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month - 1, 1).getDay();
+  const lastDate = new Date(year, month, 0).getDate();
 
   const days = ['일', '월', '화', '수', '목', '금', '토'];
 
-  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
-  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+  const goToMonth = (y: number, m: number) => {
+    const normalized = new Date(y, m - 1, 1);
+    const query = `${normalized.getFullYear()}-${String(normalized.getMonth() + 1).padStart(2, '0')}`;
+    router.push(`/home?month=${query}`);
+  };
+
+  const prevMonth = () => goToMonth(year, month - 1);
+  const nextMonth = () => goToMonth(year, month + 1);
 
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
       <h2 className="text-xl font-semibold">이번 달 복용 현황</h2>
       <div className="mt-4 flex items-center justify-between">
         <span className="text-sm">
-          {year}년 {month + 1}월
+          {year}년 {month}월
         </span>
         <div className="flex gap-2">
           <button onClick={prevMonth} type="button" className="cursor-pointer">
@@ -49,15 +62,27 @@ export default function MedicineCalendar() {
           const day = i + 1;
           const isToday =
             day === today.getDate() &&
-            month === today.getMonth() &&
+            month === today.getMonth() + 1 &&
             year === today.getFullYear();
+          const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const status = statusByDate[dateStr];
 
           return (
-            <div
-              key={day}
-              className={`mx-auto my-1 flex aspect-square w-8 items-center justify-center rounded-full text-xs ${isToday ? 'bg-accent-400 text-white' : 'hover:bg-card-muted'}`}
-            >
-              {day}
+            <div key={day} className="my-1 flex flex-col items-center gap-1">
+              <div
+                className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${isToday ? 'bg-accent-400 text-white' : 'hover:bg-card-muted'}`}
+              >
+                {day}
+              </div>
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  status === 'green'
+                    ? 'bg-primary-400'
+                    : status === 'red'
+                      ? 'bg-danger-400'
+                      : ''
+                }`}
+              />
             </div>
           );
         })}
