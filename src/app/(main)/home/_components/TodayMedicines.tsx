@@ -1,9 +1,16 @@
 import { Pill, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
+import TodayMedicineItem from './TodayMedicineItem';
+
+function toDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 // 오늘 복용할 약 분리 컴포넌트
-// TODO: 복용 완료 체크(intake_logs 연동)는 별도 작업으로 진행 예정
 export default async function TodayMedicines() {
   const supabase = await createClient();
   const {
@@ -24,6 +31,24 @@ export default async function TodayMedicines() {
     )
     .eq('user_id', user?.id ?? '')
     .eq('is_active', true);
+
+  const todayStr = toDateString(new Date());
+  const userMedicineIds = medicines?.map((medicine) => medicine.id) ?? [];
+
+  const { data: logs } =
+    userMedicineIds.length > 0
+      ? await supabase
+          .from('intake_logs')
+          .select('user_medicine_id, scheduled_time, status')
+          .eq('scheduled_date', todayStr)
+          .in('user_medicine_id', userMedicineIds)
+      : { data: [] };
+
+  const takenSet = new Set(
+    (logs ?? [])
+      .filter((log) => log.status === 'taken')
+      .map((log) => `${log.user_medicine_id}_${log.scheduled_time}`),
+  );
 
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
@@ -50,25 +75,21 @@ export default async function TodayMedicines() {
             const medicineName =
               (medicine.medicines as unknown as { name: string } | null)
                 ?.name ?? '';
+            const times: string[] = medicine.times ?? [];
+            const takenTimes = times.filter((time: string) =>
+              takenSet.has(`${medicine.id}_${time}`),
+            );
 
             return (
-              <Link
+              <TodayMedicineItem
                 key={medicine.id}
-                href={`/medicine/${medicine.medicine_id}`}
-                className="border-border-light hover:bg-card-muted flex items-center justify-between rounded-xl border p-3 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-card-muted flex aspect-square w-9 items-center justify-center rounded-lg">
-                    <Pill size={18} className="text-text-muted" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{medicineName}</p>
-                    <p className="text-text-muted text-xs">
-                      {medicine.times?.join(', ')}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+                userMedicineId={medicine.id}
+                medicineId={medicine.medicine_id}
+                name={medicineName}
+                times={times}
+                scheduledDate={todayStr}
+                takenTimes={takenTimes}
+              />
             );
           })}
         </div>
