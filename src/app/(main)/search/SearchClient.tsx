@@ -7,11 +7,20 @@ import SearchBar from './_components/SearchBar';
 import PopularMedicines from './_components/PopularMedicines';
 import SearchResults from './_components/SearchResults';
 
-interface SearchClientProps {
-  userId: string;
+interface PopularMedicine {
+  id: string;
+  name: string;
 }
 
-export default function SearchClient({ userId }: SearchClientProps) {
+interface SearchClientProps {
+  userId: string;
+  popularMedicines: PopularMedicine[];
+}
+
+export default function SearchClient({
+  userId,
+  popularMedicines,
+}: SearchClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -59,7 +68,7 @@ export default function SearchClient({ userId }: SearchClientProps) {
             setQuery={handleSelectRecentTerm}
             refetchRef={refetchRef}
           />
-          <PopularMedicines />
+          <PopularMedicines medicines={popularMedicines} />
         </>
       )}
     </div>

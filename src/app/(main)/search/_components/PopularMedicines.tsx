@@ -1,18 +1,18 @@
 import { TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
-const DUMMY_POPULAR = [
-  '타이레놀',
-  '판콜',
-  '비타민',
-  '오메가3',
-  '소화제',
-  '진통제',
-  '항생제',
-  '비타민C',
-];
+interface PopularMedicine {
+  id: string;
+  name: string;
+}
 
-export default function PopularMedicines() {
+interface PopularMedicinesProps {
+  medicines: PopularMedicine[];
+}
+
+export default function PopularMedicines({ medicines }: PopularMedicinesProps) {
+  if (medicines.length === 0) return null;
+
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -20,18 +20,17 @@ export default function PopularMedicines() {
         <span className="text-lg font-bold">많이 찾는 약</span>
       </div>
       <ul className="bg-card border-border-light mt-3 rounded-2xl border">
-        {DUMMY_POPULAR.map((name, index) => (
+        {medicines.map((medicine, index) => (
           <li
-            key={name}
+            key={medicine.id}
             className="border-border-light border-b last:border-none"
           >
-            {/* TODO: 추후 약 상세 페이지 라우팅 연결 */}
             <Link
-              href={`/search/${name}`}
+              href={`/medicine/${medicine.id}`}
               className="hover:bg-card-muted flex items-center gap-4 px-5 py-4 transition-colors"
             >
               <span className="text-text-muted w-4">{index + 1}</span>
-              <span className="">{name}</span>
+              <span className="">{medicine.name}</span>
             </Link>
           </li>
         ))}

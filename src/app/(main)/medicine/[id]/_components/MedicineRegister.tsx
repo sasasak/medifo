@@ -2,9 +2,10 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
+import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
 
 interface MedicineRegisterProps {
   medicineId: string;
@@ -23,6 +24,7 @@ export default function MedicineRegister({
 }: MedicineRegisterProps) {
   const [times, setTimes] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => {
@@ -40,10 +42,17 @@ export default function MedicineRegister({
   };
 
   const handleTimeChange = (index: number, value: string) => {
+    const isDuplicate = times.some((t, i) => i !== index && t === value);
+    if (isDuplicate) {
+      setErrorMessage('이미 추가된 시간입니다.');
+      return;
+    }
+
+    setErrorMessage('');
     setTimes((prev) => prev.map((t, i) => (i === index ? value : t)));
   };
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
     if (times.length === 0) {
       setErrorMessage('복용 시간을 추가해주세요.');
       return;
@@ -56,34 +65,48 @@ export default function MedicineRegister({
 
     setErrorMessage('');
 
-    const supabase = createClient();
+    startTransition(async () => {
+      const supabase = createClient();
+      let userMedicineId = existingData?.id;
 
-    if (existingData) {
-      const { error } = await supabase
-        .from('user_medicines')
-        .update({ times, frequency: '매일' })
-        .eq('id', existingData.id);
+      if (existingData) {
+        const { error } = await supabase
+          .from('user_medicines')
+          .update({ times, frequency: '매일' })
+          .eq('id', existingData.id);
 
-      if (error) {
-        setErrorMessage('수정에 실패했습니다. 다시 시도해주세요.');
+        if (error) {
+          setErrorMessage('수정에 실패했습니다. 다시 시도해주세요.');
+          return;
+        }
+      } else {
+        const { data, error } = await supabase
+          .from('user_medicines')
+          .insert({
+            user_id: userId,
+            medicine_id: medicineId,
+            frequency: '매일',
+            times,
+            is_active: true,
+          })
+          .select('id')
+          .single();
+
+        if (error || !data) {
+          setErrorMessage('등록에 실패했습니다. 다시 시도해주세요.');
+          return;
+        }
+        userMedicineId = data.id;
+      }
+
+      const result = await regenerateIntakeLogsAction(userMedicineId!, times);
+      if (result.error) {
+        setErrorMessage(result.error);
         return;
       }
-    } else {
-      const { error } = await supabase.from('user_medicines').insert({
-        user_id: userId,
-        medicine_id: medicineId,
-        frequency: '매일',
-        times,
-        is_active: true,
-      });
 
-      if (error) {
-        setErrorMessage('등록에 실패했습니다. 다시 시도해주세요.');
-        return;
-      }
-    }
-
-    router.push('/my-medicines?registered=true');
+      router.push('/my-medicines?registered=true');
+    });
   };
 
   return (
@@ -116,9 +139,14 @@ export default function MedicineRegister({
       <button
         type="button"
         onClick={handleRegister}
-        className="bg-button text-text-reverse-base hover:bg-hover-color mt-4 w-full cursor-pointer rounded-full py-4 font-bold transition-colors"
+        disabled={isPending}
+        className="bg-button text-text-reverse-base hover:bg-hover-color mt-4 w-full cursor-pointer rounded-full py-4 font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {existingData ? '+ 복용 시간 수정' : '+ 복용 약에 추가'}
+        {isPending
+          ? '처리 중...'
+          : existingData
+            ? '+ 복용 시간 수정'
+            : '+ 복용 약에 추가'}
       </button>
     </div>
   );

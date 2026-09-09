@@ -1,24 +1,28 @@
+import { createClient } from '@/utils/supabase/server';
 import MedicineWarningCard from './MedicineWarningCard';
 
-// TODO:추후 실제 DB 데이터로 교체
-const DUMMY_WARNINGS = [
-  { name: '타이레놀', description: '간질환자 신중 투여, 알코올 병용 금지' },
-  { name: '판콜', description: '고혈압 환자 신중 투여' },
-  { name: '이지엔 6', description: '간질환자 신중 투여' },
-  { name: '타가멧', description: '신장애 환자 신중 투여' },
-  { name: '비타민 C', description: '결석 병력 신중 투여' },
-];
+// TODO: 실제 서비스 데이터가 쌓이면 user_medicines 등록 건수 기준
+// 인기순 정렬로 교체 (현재는 테스트 데이터가 적어 의미 있는 집계 불가)
+export default async function MedicineWarnings() {
+  const supabase = await createClient();
+  const { data: warnings } = await supabase
+    .from('medicines')
+    .select('id, name, precautions')
+    .not('precautions', 'is', null)
+    .limit(5);
 
-export default function MedicineWarnings() {
+  if (!warnings || warnings.length === 0) return null;
+
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold">많이 복용하는 약 주의사항</h2>
       <div className="mt-4 grid grid-cols-4 gap-4">
-        {DUMMY_WARNINGS.map((warning) => (
+        {warnings.map((warning) => (
           <MedicineWarningCard
-            key={warning.name}
+            key={warning.id}
+            id={warning.id}
             name={warning.name}
-            description={warning.description}
+            description={warning.precautions}
           />
         ))}
       </div>
