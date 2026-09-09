@@ -42,6 +42,13 @@ export default function MedicineRegister({
   };
 
   const handleTimeChange = (index: number, value: string) => {
+    const isDuplicate = times.some((t, i) => i !== index && t === value);
+    if (isDuplicate) {
+      setErrorMessage('이미 추가된 시간입니다.');
+      return;
+    }
+
+    setErrorMessage('');
     setTimes((prev) => prev.map((t, i) => (i === index ? value : t)));
   };
 
