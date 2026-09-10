@@ -4,10 +4,13 @@ import Input from '@/components/ui/Input';
 import Link from 'next/link';
 import { Pill } from 'lucide-react';
 import { loginAction } from './loginAction';
-import { useActionState } from 'react';
+import { Suspense, useActionState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-export default function Login() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') ?? '';
 
   return (
     <section className="m-auto w-full max-w-md px-6">
@@ -23,6 +26,7 @@ export default function Login() {
         action={formAction}
         className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5"
       >
+        <input type="hidden" name="redirect" value={redirectTo} />
         <Input
           id="email"
           type="email"
@@ -53,5 +57,13 @@ export default function Login() {
         </Link>
       </p>
     </section>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
