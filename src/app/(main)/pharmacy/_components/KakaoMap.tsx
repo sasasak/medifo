@@ -18,15 +18,18 @@ interface SelectedPlace {
   phone: string;
 }
 
+type MapTarget =
+  | { mode: 'region'; query: string }
+  | { mode: 'pharmacy'; place: SelectedPlace }
+  | { mode: 'idle' };
+
 interface KakaoMapProps {
-  confirmedQuery: string;
-  selectedPlace: SelectedPlace | null;
+  mapTarget: MapTarget;
   onPharmaciesFound: (pharmacies: any[]) => void;
 }
 
 export default function KakaoMap({
-  confirmedQuery,
-  selectedPlace,
+  mapTarget,
   onPharmaciesFound,
 }: KakaoMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -38,13 +41,14 @@ export default function KakaoMap({
     markersRef.current = [];
   };
 
-  const searchNearbyPharmacy = (place: SelectedPlace) => {
+  const searchNearbyPharmacy = (place: SelectedPlace, isStale: () => boolean) => {
     if (!mapInstanceRef.current) return;
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(
       '약국',
       (data: any, status: any) => {
+        if (isStale()) return;
         if (status === window.kakao.maps.services.Status.OK) {
           clearMarkers();
 
@@ -104,6 +108,8 @@ export default function KakaoMap({
               address_name: place.address_name,
               phone: place.phone,
               distance: '',
+              x: place.x,
+              y: place.y,
             },
             ...nearby.map((p: any) => ({
               id: p.id,
@@ -111,6 +117,8 @@ export default function KakaoMap({
               address_name: p.address_name,
               phone: p.phone,
               distance: p.distance,
+              x: p.x,
+              y: p.y,
             })),
           ]);
         }
@@ -122,13 +130,18 @@ export default function KakaoMap({
     );
   };
 
-  const searchPharmacy = (latitude: number, longitude: number) => {
+  const searchPharmacy = (
+    latitude: number,
+    longitude: number,
+    isStale: () => boolean,
+  ) => {
     if (!mapInstanceRef.current) return;
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(
       '약국',
       (data: any, status: any) => {
+        if (isStale()) return;
         if (status === window.kakao.maps.services.Status.OK) {
           clearMarkers();
           data.forEach((place: any) => {
@@ -193,32 +206,39 @@ export default function KakaoMap({
   }, []);
 
   useEffect(() => {
-    if (!selectedPlace || !mapInstanceRef.current) return;
+    if (!mapInstanceRef.current) return;
 
-    const newCenter = new window.kakao.maps.LatLng(
-      selectedPlace.y,
-      selectedPlace.x,
-    );
-    mapInstanceRef.current.setCenter(newCenter);
-    searchNearbyPharmacy(selectedPlace);
-  }, [selectedPlace]);
+    let ignore = false;
+    const isStale = () => ignore;
 
-  useEffect(() => {
-    if (!confirmedQuery.trim() || !mapInstanceRef.current) return;
+    if (mapTarget.mode === 'pharmacy') {
+      const { place } = mapTarget;
+      const newCenter = new window.kakao.maps.LatLng(place.y, place.x);
+      mapInstanceRef.current.setCenter(newCenter);
+      searchNearbyPharmacy(place, isStale);
+    } else if (mapTarget.mode === 'region' && mapTarget.query.trim()) {
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(
+        mapTarget.query + ' 약국',
+        (data: any, status: any) => {
+          if (isStale()) return;
+          if (status === window.kakao.maps.services.Status.OK) {
+            const firstPlace = data[0];
+            const newCenter = new window.kakao.maps.LatLng(
+              firstPlace.y,
+              firstPlace.x,
+            );
+            mapInstanceRef.current.setCenter(newCenter);
+            searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
+          }
+        },
+      );
+    }
 
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(confirmedQuery + ' 약국', (data: any, status: any) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        const firstPlace = data[0];
-        const newCenter = new window.kakao.maps.LatLng(
-          firstPlace.y,
-          firstPlace.x,
-        );
-        mapInstanceRef.current.setCenter(newCenter);
-        searchPharmacy(Number(firstPlace.y), Number(firstPlace.x));
-      }
-    });
-  }, [confirmedQuery]);
+    return () => {
+      ignore = true;
+    };
+  }, [mapTarget]);
 
   return <div ref={mapRef} className="h-80 w-full rounded-2xl" />;
 }
