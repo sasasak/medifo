@@ -15,44 +15,50 @@ interface SelectedPlace {
   phone: string;
 }
 
+export type MapTarget =
+  | { mode: 'region'; query: string }
+  | { mode: 'pharmacy'; place: SelectedPlace }
+  | { mode: 'idle' };
+
 export default function PharmacyClient() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [confirmedQuery, setConfirmedQuery] = useState('');
-  const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(
-    null,
-  );
+  const [mapTarget, setMapTarget] = useState<MapTarget>({ mode: 'idle' });
   const [pharmacies, setPharmacies] = useState<any[]>([]);
 
   const handleSearch = () => {
-    setConfirmedQuery(searchQuery);
-    setSelectedPlace(null);
+    setMapTarget({ mode: 'region', query: searchQuery });
+  };
+
+  const handleSelectPlace = (place: SelectedPlace) => {
+    setMapTarget({ mode: 'pharmacy', place });
   };
 
   const handleSelectPharmacy = (pharmacy: any) => {
-    setSelectedPlace({
-      id: pharmacy.id,
-      name: pharmacy.place_name,
-      x: pharmacy.x,
-      y: pharmacy.y,
-      place_name: pharmacy.place_name,
-      address_name: pharmacy.address_name,
-      phone: pharmacy.phone,
+    setMapTarget({
+      mode: 'pharmacy',
+      place: {
+        id: pharmacy.id,
+        name: pharmacy.place_name,
+        x: pharmacy.x,
+        y: pharmacy.y,
+        place_name: pharmacy.place_name,
+        address_name: pharmacy.address_name,
+        phone: pharmacy.phone,
+      },
     });
   };
+
+  const selectedPlace = mapTarget.mode === 'pharmacy' ? mapTarget.place : null;
 
   return (
     <div className="flex flex-col gap-4">
       <PharmacySearchBar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onSelectPlace={(place) => setSelectedPlace(place)}
+        onSelectPlace={handleSelectPlace}
         onSearch={handleSearch}
       />
-      <KakaoMap
-        confirmedQuery={confirmedQuery}
-        selectedPlace={selectedPlace}
-        onPharmaciesFound={setPharmacies}
-      />
+      <KakaoMap mapTarget={mapTarget} onPharmaciesFound={setPharmacies} />
       {pharmacies.length > 0 && (
         <PharmacyList
           pharmacies={pharmacies}
