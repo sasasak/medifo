@@ -1,18 +1,20 @@
 'use client';
 
 import Input from '@/components/ui/Input';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { signupAction } from './signupAction';
 
 export default function Signup() {
   const [state, formAction, isPending] = useActionState(signupAction, null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [nickname, setNickname] = useState('');
 
   return (
     <section className="m-auto w-full max-w-md px-6">
-      <ThemeToggle />
       <div className="flex items-center gap-5 py-10">
         <Link href="/login">
           <ArrowLeft size={30} className="text-text-base" />
@@ -21,6 +23,7 @@ export default function Signup() {
       </div>
       <form
         action={formAction}
+        noValidate
         className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5"
       >
         <Input
@@ -29,6 +32,9 @@ export default function Signup() {
           label="이메일"
           placeholder="example@email.com"
           name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={state?.errors?.email}
         />
         <Input
           id="password"
@@ -36,6 +42,9 @@ export default function Signup() {
           label="비밀번호"
           placeholder="비밀번호를 입력해주세요."
           name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={state?.errors?.password}
         />
         <Input
           id="confirmPassword"
@@ -43,6 +52,9 @@ export default function Signup() {
           label="비밀번호 확인"
           placeholder="비밀번호를 다시 입력해주세요."
           name="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={state?.errors?.confirmPassword}
         />
         <Input
           id="nickname"
@@ -50,9 +62,10 @@ export default function Signup() {
           label="닉네임 입력"
           placeholder="사용할 닉네임을 입력해주세요."
           name="nickname"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          error={state?.errors?.nickname}
         />
-
-        {state?.error && <p className="text-danger-400">{state.error}</p>}
 
         <button
           type="submit"
