@@ -4,13 +4,15 @@ import Input from '@/components/ui/Input';
 import Link from 'next/link';
 import { Pill } from 'lucide-react';
 import { loginAction } from './loginAction';
-import { Suspense, useActionState } from 'react';
+import { Suspense, useActionState, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') ?? '';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <section className="m-auto w-full max-w-md px-6">
@@ -24,6 +26,7 @@ function LoginForm() {
       </div>
       <form
         action={formAction}
+        noValidate
         className="bg-card text-text-base flex flex-col gap-5 rounded-2xl p-5"
       >
         <input type="hidden" name="redirect" value={redirectTo} />
@@ -33,6 +36,9 @@ function LoginForm() {
           label="이메일 "
           placeholder="example@email.com"
           name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={state?.errors?.email}
         />
         <Input
           id="password"
@@ -40,8 +46,10 @@ function LoginForm() {
           label="비밀번호"
           placeholder="비밀번호를 입력해주세요."
           name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={state?.errors?.password}
         />
-        {state?.error && <p className="text-danger-400">{state.error}</p>}
         <button
           type="submit"
           disabled={isPending}

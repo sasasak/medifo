@@ -9,6 +9,9 @@ interface InputProps {
   placeholder?: string;
   name: string;
   defaultValue?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 export default function Input({
@@ -18,6 +21,9 @@ export default function Input({
   placeholder,
   name,
   defaultValue,
+  value,
+  onChange,
+  error,
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
@@ -32,7 +38,9 @@ export default function Input({
           type={isPassword && showPassword ? 'text' : type}
           placeholder={placeholder}
           name={name}
-          defaultValue={defaultValue}
+          value={value}
+          defaultValue={value === undefined ? defaultValue : undefined}
+          onChange={onChange}
           className="text-text-hint border-card-border rounded-card focus:ring-border-focus h-14 w-full border px-3 py-2 pr-12 font-medium outline-none focus:ring-1"
         />
         {isPassword && (
@@ -46,6 +54,7 @@ export default function Input({
           </button>
         )}
       </div>
+      {error && <p className="text-danger-400 text-sm">{error}</p>}
     </div>
   );
 }
