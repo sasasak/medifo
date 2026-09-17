@@ -2,6 +2,8 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { profileSchema } from '@/schemas/profileSchema';
+import { toFieldErrors } from '@/schemas/zodErrors';
 
 type UpdateProfileState = { error: string; success: boolean };
 
@@ -9,15 +11,19 @@ export const updateProfileAction = async (
   _: UpdateProfileState,
   formData: FormData,
 ): Promise<UpdateProfileState> => {
-  const nickname = formData.get('nickname') as string;
+  const parsed = profileSchema.safeParse({
+    nickname: (formData.get('nickname') as string) ?? '',
+  });
 
-  if (!nickname || nickname.trim().length === 0) {
-    return { error: '닉네임을 입력해주세요.', success: false };
+  if (!parsed.success) {
+    const fieldErrors = toFieldErrors(parsed.error);
+    return {
+      error: fieldErrors.nickname ?? '입력값을 확인해주세요.',
+      success: false,
+    };
   }
 
-  if (nickname.length > 20) {
-    return { error: '닉네임은 20자 이하로 입력해주세요.', success: false };
-  }
+  const { nickname } = parsed.data;
 
   const supabase = await createClient();
   const {
@@ -33,11 +39,14 @@ export const updateProfileAction = async (
 
   const { error } = await supabase
     .from('users')
-    .update({ nickname: nickname.trim() })
+    .update({ nickname })
     .eq('id', user.id);
 
   if (error) {
-    return { error: '닉네임 변경에 실패했습니다. 다시 시도해주세요.', success: false };
+    return {
+      error: '닉네임 변경에 실패했습니다. 다시 시도해주세요.',
+      success: false,
+    };
   }
 
   revalidatePath('/mypage');

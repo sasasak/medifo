@@ -2,6 +2,8 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import { loginSchema } from '@/schemas/loginSchema';
+import { toFieldErrors } from '@/schemas/zodErrors';
 
 type LoginErrors = {
   email?: string;
@@ -11,9 +13,6 @@ type LoginErrors = {
 export type LoginActionState = {
   errors: LoginErrors;
 } | null;
-
-// 이메일 형식 검사용 정규식
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // 미들웨어가 붙여준 redirect 값이 외부 URL(//evil.com, /\evil.com 등)로
 // 조작되지 않았는지 확인 - 내부 상대 경로일 때만 허용
@@ -30,26 +29,18 @@ export const loginAction = async (
   _: LoginActionState,
   formData: FormData,
 ): Promise<LoginActionState> => {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
   const redirectTo = formData.get('redirect') as string | null;
 
-  // 필드별 유효성 검사 - 추후 리팩토링 시 zod 로 교체
-  const errors: LoginErrors = {};
+  const parsed = loginSchema.safeParse({
+    email: (formData.get('email') as string) ?? '',
+    password: (formData.get('password') as string) ?? '',
+  });
 
-  if (!email) {
-    errors.email = '이메일을 입력해주세요.';
-  } else if (!emailRegex.test(email)) {
-    errors.email = '올바른 이메일 형식이 아닙니다.';
+  if (!parsed.success) {
+    return { errors: toFieldErrors(parsed.error) };
   }
 
-  if (!password) {
-    errors.password = '비밀번호를 입력해주세요.';
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return { errors };
-  }
+  const { email, password } = parsed.data;
 
   const supabase = await createClient();
 
