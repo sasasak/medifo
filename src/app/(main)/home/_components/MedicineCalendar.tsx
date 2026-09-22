@@ -7,15 +7,25 @@ interface MedicineCalendarProps {
   year: number;
   month: number; // 1-12
   statusByDate: Record<string, 'green' | 'red'>;
+  selectedDate?: string;
+}
+
+function toDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 export default function MedicineCalendar({
   year,
   month,
   statusByDate,
+  selectedDate,
 }: MedicineCalendarProps) {
   const router = useRouter();
   const today = new Date();
+  const todayStr = toDateString(today);
 
   const firstDay = new Date(year, month - 1, 1).getDay();
   const lastDate = new Date(year, month, 0).getDate();
@@ -30,6 +40,11 @@ export default function MedicineCalendar({
 
   const prevMonth = () => goToMonth(year, month - 1);
   const nextMonth = () => goToMonth(year, month + 1);
+
+  const goToDate = (dateStr: string) => {
+    const query = `${year}-${String(month).padStart(2, '0')}`;
+    router.push(`/home?month=${query}&date=${dateStr}`);
+  };
 
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
@@ -60,20 +75,29 @@ export default function MedicineCalendar({
         ))}
         {Array.from({ length: lastDate }).map((_, i) => {
           const day = i + 1;
-          const isToday =
-            day === today.getDate() &&
-            month === today.getMonth() + 1 &&
-            year === today.getFullYear();
           const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const isToday = dateStr === todayStr;
+          const isFuture = dateStr > todayStr;
+          const isPast = dateStr < todayStr;
+          const isSelected = dateStr === selectedDate;
           const status = statusByDate[dateStr];
 
           return (
             <div key={day} className="my-1 flex flex-col items-center gap-1">
-              <div
-                className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${isToday ? 'bg-accent-400 text-white' : 'hover:bg-card-muted'}`}
+              <button
+                type="button"
+                disabled={!isPast}
+                onClick={() => goToDate(dateStr)}
+                className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${
+                  isToday
+                    ? 'bg-accent-400 text-white'
+                    : isFuture
+                      ? 'text-text-muted cursor-not-allowed opacity-50'
+                      : `cursor-pointer hover:bg-card-muted ${isSelected ? 'ring-accent-400 ring-2' : ''}`
+                }`}
               >
                 {day}
-              </div>
+              </button>
               <span
                 className={`h-1.5 w-1.5 rounded-full ${
                   status === 'green'

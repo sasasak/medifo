@@ -5,7 +5,7 @@ import MedicineCalendar from './_components/MedicineCalendar';
 import MedicineWarnings from './_components/MedicineWarning';
 
 interface HomeProps {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ month?: string; date?: string }>;
 }
 
 function toDateString(date: Date): string {
@@ -37,7 +37,7 @@ export default async function Home({ searchParams }: HomeProps) {
     weekday: 'long',
   });
 
-  const { month: monthParam } = await searchParams;
+  const { month: monthParam, date: dateParam } = await searchParams;
   const now = new Date();
   const [year, month] = monthParam
     ? monthParam.split('-').map(Number)
@@ -46,6 +46,12 @@ export default async function Home({ searchParams }: HomeProps) {
   const monthStart = toDateString(new Date(year, month - 1, 1));
   const monthEnd = toDateString(new Date(year, month, 0));
   const todayStr = toDateString(now);
+
+  // date 쿼리는 사용자가 URL을 직접 조작할 수 있으므로 서버에서도 과거 날짜인지 재검증
+  const isValidDateParam =
+    !!dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam);
+  const selectedDate =
+    isValidDateParam && dateParam! < todayStr ? dateParam : undefined;
 
   const { data: logs } = await supabase
     .from('intake_logs')
@@ -85,11 +91,12 @@ export default async function Home({ searchParams }: HomeProps) {
       <HomeHeader nickname={data?.nickname} date={date} />
 
       <div className="border-border-light mt-6 flex gap-6 border-t pt-6">
-        <TodayMedicines />
+        <TodayMedicines selectedDate={selectedDate} />
         <MedicineCalendar
           year={year}
           month={month}
           statusByDate={statusByDate}
+          selectedDate={selectedDate}
         />
       </div>
       <MedicineWarnings />
