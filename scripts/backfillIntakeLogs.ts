@@ -15,7 +15,7 @@ async function main() {
 
   const { data: userMedicines, error } = await supabase
     .from('user_medicines')
-    .select('id, user_id, times')
+    .select('id, user_id, times, repeat_type, start_date')
     .eq('is_active', true);
 
   if (error) {
@@ -34,6 +34,8 @@ async function main() {
         userId: userMedicine.user_id,
         userMedicineId: userMedicine.id,
         times: userMedicine.times ?? [],
+        startDate: userMedicine.start_date,
+        repeatType: userMedicine.repeat_type,
       });
       successCount += 1;
     } catch (err) {

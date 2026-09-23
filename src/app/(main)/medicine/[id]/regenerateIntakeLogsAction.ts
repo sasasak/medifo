@@ -2,12 +2,15 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { regenerateSchedule } from '@/utils/intakeLogs/regenerateSchedule';
+import type { RepeatType } from '@/schemas/medicineRegisterSchema';
 
 type RegenerateIntakeLogsState = { error: string };
 
 export const regenerateIntakeLogsAction = async (
   userMedicineId: string,
   times: string[],
+  startDate: string,
+  repeatType: RepeatType,
 ): Promise<RegenerateIntakeLogsState> => {
   const supabase = await createClient();
   const {
@@ -23,6 +26,8 @@ export const regenerateIntakeLogsAction = async (
       userId: user.id,
       userMedicineId,
       times,
+      startDate,
+      repeatType,
     });
   } catch {
     return { error: '복용 일정 생성에 실패했습니다. 다시 시도해주세요.' };

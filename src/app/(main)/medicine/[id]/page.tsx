@@ -29,7 +29,7 @@ export default async function MedicineDetailPage({
 
   const { data: existingMedicine } = await supabase
     .from('user_medicines')
-    .select('id, times, frequency')
+    .select('id, times, frequency, repeat_type, start_date')
     .eq('user_id', user?.id)
     .eq('medicine_id', id)
     .limit(1)
@@ -54,7 +54,17 @@ export default async function MedicineDetailPage({
       <MedicineRegister
         medicineId={id}
         userId={user?.id ?? ''}
-        existingData={existingMedicine}
+        existingData={
+          existingMedicine
+            ? {
+                id: existingMedicine.id,
+                times: existingMedicine.times,
+                frequency: existingMedicine.frequency,
+                repeatType: existingMedicine.repeat_type,
+                startDate: existingMedicine.start_date,
+              }
+            : null
+        }
       />
     </section>
   );

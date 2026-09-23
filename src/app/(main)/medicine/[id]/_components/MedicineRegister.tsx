@@ -6,6 +6,27 @@ import { useEffect, useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
 import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
+import {
+  medicineRegisterSchema,
+  type RepeatType,
+} from '@/schemas/medicineRegisterSchema';
+
+const REPEAT_TYPE_OPTIONS: { value: RepeatType; label: string }[] = [
+  { value: 'daily', label: '매일 반복' },
+  { value: 'once', label: '특정 날짜 1회' },
+];
+
+const FREQUENCY_LABEL: Record<RepeatType, string> = {
+  daily: '매일',
+  once: '1회',
+};
+
+function toDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 interface MedicineRegisterProps {
   medicineId: string;
@@ -14,6 +35,8 @@ interface MedicineRegisterProps {
     id: string;
     times: string[];
     frequency: string;
+    repeatType: RepeatType;
+    startDate: string;
   } | null;
 }
 
@@ -23,6 +46,8 @@ export default function MedicineRegister({
   existingData,
 }: MedicineRegisterProps) {
   const [times, setTimes] = useState<string[]>([]);
+  const [repeatType, setRepeatType] = useState<RepeatType>('daily');
+  const [startDate, setStartDate] = useState(() => toDateString(new Date()));
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -30,6 +55,12 @@ export default function MedicineRegister({
   useEffect(() => {
     if (existingData?.times) {
       setTimes(existingData.times);
+    }
+    if (existingData?.repeatType) {
+      setRepeatType(existingData.repeatType);
+    }
+    if (existingData?.startDate) {
+      setStartDate(existingData.startDate);
     }
   }, [existingData]);
 
@@ -53,13 +84,16 @@ export default function MedicineRegister({
   };
 
   const handleRegister = () => {
-    if (times.length === 0) {
-      setErrorMessage('복용 시간을 추가해주세요.');
-      return;
-    }
+    const parsed = medicineRegisterSchema.safeParse({
+      repeatType,
+      startDate,
+      times,
+    });
 
-    if (times.some((time) => !time)) {
-      setErrorMessage('복용 시간을 설정해주세요.');
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.',
+      );
       return;
     }
 
@@ -68,11 +102,17 @@ export default function MedicineRegister({
     startTransition(async () => {
       const supabase = createClient();
       let userMedicineId = existingData?.id;
+      const frequency = FREQUENCY_LABEL[repeatType];
 
       if (existingData) {
         const { error } = await supabase
           .from('user_medicines')
-          .update({ times, frequency: '매일' })
+          .update({
+            times,
+            frequency,
+            repeat_type: repeatType,
+            start_date: startDate,
+          })
           .eq('id', existingData.id);
 
         if (error) {
@@ -85,7 +125,9 @@ export default function MedicineRegister({
           .insert({
             user_id: userId,
             medicine_id: medicineId,
-            frequency: '매일',
+            frequency,
+            repeat_type: repeatType,
+            start_date: startDate,
             times,
             is_active: true,
           })
@@ -99,7 +141,12 @@ export default function MedicineRegister({
         userMedicineId = data.id;
       }
 
-      const result = await regenerateIntakeLogsAction(userMedicineId!, times);
+      const result = await regenerateIntakeLogsAction(
+        userMedicineId!,
+        times,
+        startDate,
+        repeatType,
+      );
       if (result.error) {
         setErrorMessage(result.error);
         return;
@@ -111,7 +158,34 @@ export default function MedicineRegister({
 
   return (
     <div className="bg-card border-border-light mt-4 rounded-2xl border p-6">
-      <div className="flex items-center justify-between">
+      <span>복용 주기</span>
+      <div className="mt-2 flex gap-2">
+        {REPEAT_TYPE_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => setRepeatType(option.value)}
+            className={`flex-1 cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors ${
+              repeatType === option.value
+                ? 'bg-button text-text-reverse-base border-button'
+                : 'border-border-light text-text-muted hover:bg-card-muted'
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-4">
+        <span>시작 날짜</span>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm outline-none"
+        />
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
         <span>복용 시간 설정</span>
         <button
           type="button"
