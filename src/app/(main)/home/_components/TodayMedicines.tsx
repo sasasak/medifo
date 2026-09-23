@@ -54,99 +54,46 @@ export default async function TodayMedicines({
   const editable =
     !isPastView || diffInDays(todayStr, targetDate) <= EDITABLE_PAST_DAYS;
 
-  let rows: MedicineRow[] = [];
-
-  if (isPastView) {
-    const { data: logs } = await supabase
-      .from('intake_logs')
-      .select(
-        `
-        user_medicine_id,
-        scheduled_time,
-        status,
-        user_medicines (
-          id,
-          medicine_id,
-          medicines ( name )
-        )
-      `,
-      )
-      .eq('user_id', user?.id ?? '')
-      .eq('scheduled_date', targetDate)
-      .order('scheduled_time', { ascending: true });
-
-    const groups = new Map<string, MedicineRow>();
-    (logs ?? []).forEach((log) => {
-      const userMedicine = log.user_medicines as unknown as {
-        id: string;
-        medicine_id: string;
-        medicines: { name: string } | null;
-      } | null;
-      if (!userMedicine) return;
-
-      const existing: MedicineRow = groups.get(log.user_medicine_id) ?? {
-        userMedicineId: log.user_medicine_id,
-        medicineId: userMedicine.medicine_id,
-        name: userMedicine.medicines?.name ?? '',
-        times: [],
-        takenTimes: [],
-      };
-      existing.times.push(log.scheduled_time);
-      if (log.status === 'taken') existing.takenTimes.push(log.scheduled_time);
-      groups.set(log.user_medicine_id, existing);
-    });
-
-    rows = Array.from(groups.values());
-  } else {
-    const { data: medicines } = await supabase
-      .from('user_medicines')
-      .select(
-        `
-      id,
-      medicine_id,
-      times,
-      medicines (
-        name
+  const { data: logs } = await supabase
+    .from('intake_logs')
+    .select(
+      `
+      user_medicine_id,
+      scheduled_time,
+      status,
+      user_medicines (
+        id,
+        medicine_id,
+        medicines ( name )
       )
     `,
-      )
-      .eq('user_id', user?.id ?? '')
-      .eq('is_active', true);
+    )
+    .eq('user_id', user?.id ?? '')
+    .eq('scheduled_date', targetDate)
+    .order('scheduled_time', { ascending: true });
 
-    const userMedicineIds = medicines?.map((medicine) => medicine.id) ?? [];
+  const groups = new Map<string, MedicineRow>();
+  (logs ?? []).forEach((log) => {
+    const userMedicine = log.user_medicines as unknown as {
+      id: string;
+      medicine_id: string;
+      medicines: { name: string } | null;
+    } | null;
+    if (!userMedicine) return;
 
-    const { data: logs } =
-      userMedicineIds.length > 0
-        ? await supabase
-            .from('intake_logs')
-            .select('user_medicine_id, scheduled_time, status')
-            .eq('scheduled_date', todayStr)
-            .in('user_medicine_id', userMedicineIds)
-        : { data: [] };
+    const existing: MedicineRow = groups.get(log.user_medicine_id) ?? {
+      userMedicineId: log.user_medicine_id,
+      medicineId: userMedicine.medicine_id,
+      name: userMedicine.medicines?.name ?? '',
+      times: [],
+      takenTimes: [],
+    };
+    existing.times.push(log.scheduled_time);
+    if (log.status === 'taken') existing.takenTimes.push(log.scheduled_time);
+    groups.set(log.user_medicine_id, existing);
+  });
 
-    const takenSet = new Set(
-      (logs ?? [])
-        .filter((log) => log.status === 'taken')
-        .map((log) => `${log.user_medicine_id}_${log.scheduled_time}`),
-    );
-
-    rows = (medicines ?? []).map((medicine) => {
-      const medicineName =
-        (medicine.medicines as unknown as { name: string } | null)?.name ?? '';
-      const times: string[] = medicine.times ?? [];
-      const takenTimes = times.filter((time: string) =>
-        takenSet.has(`${medicine.id}_${time}`),
-      );
-
-      return {
-        userMedicineId: medicine.id,
-        medicineId: medicine.medicine_id,
-        name: medicineName,
-        times,
-        takenTimes,
-      };
-    });
-  }
+  const rows = Array.from(groups.values());
 
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
