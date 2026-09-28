@@ -11,12 +11,17 @@ interface SearchResultsProps {
 type Medicine = {
   id: string;
   name: string;
-  manufacturer: string;
-  efficacy: string;
+  manufacturer: string | null;
+  efficacy: string | null;
+  image_url: string | null;
 };
+
+// 짧은 검색어(예: "정")로 수천 건이 내려오는 것을 막기 위한 상한 (페이지네이션은 별도 작업)
+const SEARCH_RESULT_LIMIT = 50;
 
 export default function SearchResults({ query }: SearchResultsProps) {
   const [results, setResults] = useState<Medicine[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -25,12 +30,19 @@ export default function SearchResults({ query }: SearchResultsProps) {
     const fetchResults = async () => {
       setIsLoading(true);
       const supabase = createClient();
-      const { data } = await supabase
+      const { data, count } = await supabase
         .from('medicines')
-        .select('id, name, manufacturer, efficacy')
-        .ilike('name', `%${query}%`);
+        .select('id, name, manufacturer, efficacy, image_url', {
+          count: 'exact',
+        })
+        .ilike('name', `%${query}%`)
+        .order('name')
+        .limit(SEARCH_RESULT_LIMIT);
 
-      if (data) setResults(data);
+      if (data) {
+        setResults(data);
+        setTotalCount(count ?? data.length);
+      }
       setIsLoading(false);
     };
     fetchResults();
@@ -40,7 +52,15 @@ export default function SearchResults({ query }: SearchResultsProps) {
 
   return (
     <div>
-      <p>{results.length}건의 결과</p>
+      <p>
+        {totalCount}건의 결과
+        {totalCount > results.length && (
+          <span className="text-text-muted text-sm">
+            {' '}
+            (상위 {results.length}건만 표시)
+          </span>
+        )}
+      </p>
       <div className="py-3">
         {results.length === 0 ? (
           <p>검색 결과가 존재하지 않습니다.</p>
@@ -52,6 +72,7 @@ export default function SearchResults({ query }: SearchResultsProps) {
               name={medicine.name}
               manufacturer={medicine.manufacturer}
               efficacy={medicine.efficacy}
+              imageUrl={medicine.image_url}
             />
           ))
         )}
