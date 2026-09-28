@@ -36,6 +36,8 @@ export default function SearchResults({ query }: SearchResultsProps) {
           count: 'exact',
         })
         .ilike('name', `%${query}%`)
+        // TODO: 테스트 데이터 5건(synced_at 없음) 정리 후 이 조건 제거
+        .not('synced_at', 'is', null)
         .order('name')
         .limit(SEARCH_RESULT_LIMIT);
 

@@ -7,19 +7,14 @@ import SearchBar from './_components/SearchBar';
 import PopularMedicines from './_components/PopularMedicines';
 import SearchResults from './_components/SearchResults';
 
-interface PopularMedicine {
-  id: string;
-  name: string;
-}
-
 interface SearchClientProps {
   userId: string;
-  popularMedicines: PopularMedicine[];
+  popularKeywords: string[];
 }
 
 export default function SearchClient({
   userId,
-  popularMedicines,
+  popularKeywords,
 }: SearchClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,6 +23,14 @@ export default function SearchClient({
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
   // 실제 검색된 텍스트 - URL 쿼리
   const searchedQuery = searchParams.get('q') ?? '';
+
+  // 뒤로/앞으로 가기로 URL 검색어가 바뀌면 입력창도 맞춰준다.
+  // effect 안에서 setState하면 연쇄 렌더가 생겨(react-hooks/set-state-in-effect) 렌더 중에 이전 값과 비교해 갱신
+  const [prevSearchedQuery, setPrevSearchedQuery] = useState(searchedQuery);
+  if (searchedQuery !== prevSearchedQuery) {
+    setPrevSearchedQuery(searchedQuery);
+    setQuery(searchedQuery);
+  }
 
   const refetchRef = useRef<(() => void) | null>(null);
 
@@ -50,6 +53,12 @@ export default function SearchClient({
     router.replace(`/search?q=${encodeURIComponent(term)}`);
   };
 
+  // push로 기록을 남겨 결과 화면에서 뒤로 가기 시 인기 목록으로 돌아오게 한다
+  const handleSelectPopularKeyword = (keyword: string) => {
+    setQuery(keyword);
+    router.push(`/search?q=${encodeURIComponent(keyword)}`);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SearchBar
@@ -68,7 +77,10 @@ export default function SearchClient({
             setQuery={handleSelectRecentTerm}
             refetchRef={refetchRef}
           />
-          <PopularMedicines medicines={popularMedicines} />
+          <PopularMedicines
+            keywords={popularKeywords}
+            onSelect={handleSelectPopularKeyword}
+          />
         </>
       )}
     </div>
