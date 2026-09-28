@@ -42,12 +42,15 @@ export default async function MedicineDetailPage({
         name={medicine.name}
         manufacturer={medicine.manufacturer}
         efficacy={medicine.efficacy}
+        imageUrl={medicine.image_url}
       />
       <ContraindicationAlert contraindications={medicine.contraindications} />
       <MedicineAccordion
         efficacy={medicine.efficacy}
         usage={medicine.usage}
+        warnings={medicine.warnings}
         precautions={medicine.precautions}
+        interactions={medicine.interactions}
         sideEffects={medicine.side_effects}
         storage={medicine.storage}
       />

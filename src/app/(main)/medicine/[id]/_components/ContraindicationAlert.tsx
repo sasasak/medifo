@@ -1,7 +1,8 @@
 import { AlertTriangle } from 'lucide-react';
 
 interface ContraindicationAlertProps {
-  contraindications: string;
+  // e약은요 수집분은 병용금기 데이터가 없어 null (테스트 데이터 5건에만 존재)
+  contraindications: string | null;
 }
 
 export default function ContraindicationAlert({

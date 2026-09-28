@@ -1,11 +1,12 @@
-import { Pill } from 'lucide-react';
+import MedicineImage from '@/components/ui/MedicineImage';
 import Link from 'next/link';
 
 interface MedicineCardProps {
   id: string;
   name: string;
-  manufacturer: string;
-  efficacy: string;
+  manufacturer: string | null;
+  efficacy: string | null;
+  imageUrl: string | null;
 }
 
 export default function MedicineCard({
@@ -13,16 +14,17 @@ export default function MedicineCard({
   name,
   manufacturer,
   efficacy,
+  imageUrl,
 }: MedicineCardProps) {
   return (
     <div className="bg-card border-border-light flex items-center gap-4 rounded-2xl border p-4">
-      <div className="bg-card-muted flex aspect-square h-20 shrink-0 items-center justify-center rounded-xl">
-        <Pill size={38} className="text-text-muted" />
+      <div className="bg-card-muted relative flex aspect-square h-20 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+        <MedicineImage src={imageUrl} alt={name} iconSize={38} sizes="80px" />
       </div>
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="text-lg font-bold">{name}</span>
         <span className="text-text-muted">{manufacturer}</span>
-        <span className="text-text-hint text-sm">{efficacy}</span>
+        <span className="text-text-hint line-clamp-2 text-sm">{efficacy}</span>
       </div>
       <div className="flex gap-3">
         <Link

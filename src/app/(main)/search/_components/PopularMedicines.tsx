@@ -1,17 +1,15 @@
 import { TrendingUp } from 'lucide-react';
-import Link from 'next/link';
-
-interface PopularMedicine {
-  id: string;
-  name: string;
-}
 
 interface PopularMedicinesProps {
-  medicines: PopularMedicine[];
+  keywords: string[];
+  onSelect: (keyword: string) => void;
 }
 
-export default function PopularMedicines({ medicines }: PopularMedicinesProps) {
-  if (medicines.length === 0) return null;
+export default function PopularMedicines({
+  keywords,
+  onSelect,
+}: PopularMedicinesProps) {
+  if (keywords.length === 0) return null;
 
   return (
     <div>
@@ -20,18 +18,19 @@ export default function PopularMedicines({ medicines }: PopularMedicinesProps) {
         <span className="text-lg font-bold">많이 찾는 약</span>
       </div>
       <ul className="bg-card border-border-light mt-3 rounded-2xl border">
-        {medicines.map((medicine, index) => (
+        {keywords.map((keyword, index) => (
           <li
-            key={medicine.id}
+            key={keyword}
             className="border-border-light border-b last:border-none"
           >
-            <Link
-              href={`/medicine/${medicine.id}`}
-              className="hover:bg-card-muted flex items-center gap-4 px-5 py-4 transition-colors"
+            <button
+              type="button"
+              onClick={() => onSelect(keyword)}
+              className="hover:bg-card-muted flex w-full cursor-pointer items-center gap-4 px-5 py-4 text-left transition-colors"
             >
               <span className="text-text-muted w-4">{index + 1}</span>
-              <span className="">{medicine.name}</span>
-            </Link>
+              <span>{keyword}</span>
+            </button>
           </li>
         ))}
       </ul>
