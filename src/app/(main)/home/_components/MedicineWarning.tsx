@@ -9,9 +9,6 @@ export default async function MedicineWarnings() {
     .from('medicines')
     .select('id, name, precautions')
     .not('precautions', 'is', null)
-    // TODO: 테스트 데이터 5건(synced_at 없음) 정리 후 이 조건 제거
-    // 정렬 없이 limit만 걸려 있어 먼저 저장된 가짜 약이 노출되는 것을 임시로 막는 용도
-    .not('synced_at', 'is', null)
     .limit(5);
 
   if (!warnings || warnings.length === 0) return null;

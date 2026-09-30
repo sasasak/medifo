@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import RecentSearches from './_components/RecentSearches';
 import SearchBar from './_components/SearchBar';
@@ -32,13 +32,15 @@ export default function SearchClient({
     setQuery(searchedQuery);
   }
 
-  const refetchRef = useRef<(() => void) | null>(null);
-
-  const handleSearch = async () => {
-    if (!query.trim()) return;
-    router.replace(`/search?q=${encodeURIComponent(query.trim())}`);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    refetchRef.current?.();
+  // Enter 검색, 최근 검색어, 인기 키워드 모두 push로 기록을 남겨
+  // 결과 화면에서 뒤로 가기 시 이전 검색이나 목록 화면으로 돌아오게 한다.
+  // 지금 보고 있는 검색어와 같으면 기록이 중복으로 쌓이지 않게 건너뛴다.
+  const navigateToQuery = (term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed) return;
+    setQuery(trimmed);
+    if (trimmed === searchedQuery) return;
+    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
   };
 
   const handleQueryChange = (val: string) => {
@@ -48,24 +50,13 @@ export default function SearchClient({
     }
   };
 
-  const handleSelectRecentTerm = (term: string) => {
-    setQuery(term);
-    router.replace(`/search?q=${encodeURIComponent(term)}`);
-  };
-
-  // push로 기록을 남겨 결과 화면에서 뒤로 가기 시 인기 목록으로 돌아오게 한다
-  const handleSelectPopularKeyword = (keyword: string) => {
-    setQuery(keyword);
-    router.push(`/search?q=${encodeURIComponent(keyword)}`);
-  };
-
   return (
     <div className="flex flex-col gap-6">
       <SearchBar
         query={query}
         setQuery={handleQueryChange}
         userId={userId}
-        onSearch={handleSearch}
+        onSearch={() => navigateToQuery(query)}
       />
       {searchedQuery ? (
         <SearchResults query={searchedQuery} />
@@ -74,12 +65,11 @@ export default function SearchClient({
           <RecentSearches
             userId={userId}
             query={query}
-            setQuery={handleSelectRecentTerm}
-            refetchRef={refetchRef}
+            setQuery={navigateToQuery}
           />
           <PopularMedicines
             keywords={popularKeywords}
-            onSelect={handleSelectPopularKeyword}
+            onSelect={navigateToQuery}
           />
         </>
       )}
