@@ -2,13 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { Clock, X } from 'lucide-react';
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
 type RecentSearch = { id: string; term: string };
 
@@ -16,13 +10,11 @@ interface RecentSearchesProps {
   userId: string;
   query: string;
   setQuery: (term: string) => void;
-  refetchRef: RefObject<(() => void) | null>;
 }
 
 export default function RecentSearches({
   userId,
   setQuery,
-  refetchRef,
 }: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
 
@@ -42,7 +34,6 @@ export default function RecentSearches({
 
   useEffect(() => {
     fetchRecentSearches();
-    refetchRef.current = fetchRecentSearches;
   }, [userId]);
 
   const handleDeleteAll = async () => {
