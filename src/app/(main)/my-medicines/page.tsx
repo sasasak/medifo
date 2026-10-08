@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import UserMedicineCard from './_components/UserMedicineCard';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Pill, Plus } from 'lucide-react';
 import MyMedicineClient from './MyMedicidinesClient';
 
 export default async function MyMedicinesPage() {
@@ -39,22 +39,31 @@ export default async function MyMedicinesPage() {
           <Plus size={16} />약 추가
         </Link>
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        {medicines?.map((medicine) => (
-          <UserMedicineCard
-            key={medicine.id}
-            id={medicine.id}
-            medicineId={medicine.medicine_id}
-            name={
-              (medicine.medicines as unknown as { name: string } | null)
-                ?.name ?? ''
-            }
-            frequency={medicine.frequency}
-            times={medicine.times}
-            dosage={medicine.dosage}
-          />
-        ))}
-      </div>
+      {medicines && medicines.length > 0 ? (
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          {medicines?.map((medicine) => (
+            <UserMedicineCard
+              key={medicine.id}
+              id={medicine.id}
+              medicineId={medicine.medicine_id}
+              name={
+                (medicine.medicines as unknown as { name: string } | null)
+                  ?.name ?? ''
+              }
+              frequency={medicine.frequency}
+              times={medicine.times}
+              dosage={medicine.dosage}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-3 pt-10">
+          <div className="bg-card-muted flex aspect-square w-15 items-center justify-center rounded-full">
+            <Pill size={30} className="text-text-muted" />
+          </div>
+          <p className="text-sm">현재 복용중인 약이 존재하지 않습니다.</p>
+        </div>
+      )}
     </section>
   );
 }
