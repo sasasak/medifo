@@ -1,0 +1,69 @@
+import { createClient } from '@/utils/supabase/server';
+import UserMedicineCard from './_components/UserMedicineCard';
+import Link from 'next/link';
+import { Pill, Plus } from 'lucide-react';
+import MyMedicineClient from './MyMedicidinesClient';
+
+export default async function MyMedicinesPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: medicines } = await supabase
+    .from('user_medicines')
+    .select(
+      `
+      id,
+      medicine_id,
+      dosage,
+      frequency,
+      times,
+      medicines (
+        name
+      )
+    `,
+    )
+    .eq('user_id', user?.id)
+    .eq('is_active', true);
+
+  return (
+    <section className="p-6">
+      <MyMedicineClient />
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">내 복용 약</h1>
+        <Link
+          href="/search"
+          className="border-border-light hover:bg-card-muted flex cursor-pointer items-center gap-1 rounded-full border px-4 py-2 text-sm transition-colors"
+        >
+          <Plus size={16} />약 추가
+        </Link>
+      </div>
+      {medicines && medicines.length > 0 ? (
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          {medicines?.map((medicine) => (
+            <UserMedicineCard
+              key={medicine.id}
+              id={medicine.id}
+              medicineId={medicine.medicine_id}
+              name={
+                (medicine.medicines as unknown as { name: string } | null)
+                  ?.name ?? ''
+              }
+              frequency={medicine.frequency}
+              times={medicine.times}
+              dosage={medicine.dosage}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-3 pt-10">
+          <div className="bg-card-muted flex aspect-square w-15 items-center justify-center rounded-full">
+            <Pill size={30} className="text-text-muted" />
+          </div>
+          <p className="text-sm">현재 복용중인 약이 존재하지 않습니다.</p>
+        </div>
+      )}
+    </section>
+  );
+}

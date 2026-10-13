@@ -1,0 +1,39 @@
+import MedicineImage from '@/components/ui/MedicineImage';
+import Link from 'next/link';
+
+interface MedicineCardProps {
+  id: string;
+  name: string;
+  manufacturer: string | null;
+  efficacy: string | null;
+  imageUrl: string | null;
+}
+
+export default function MedicineCard({
+  id,
+  name,
+  manufacturer,
+  efficacy,
+  imageUrl,
+}: MedicineCardProps) {
+  return (
+    <div className="bg-card border-border-light flex items-center gap-4 rounded-2xl border p-4">
+      <div className="bg-card-muted relative flex aspect-square h-20 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+        <MedicineImage src={imageUrl} alt={name} iconSize={38} sizes="80px" />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="text-lg font-bold">{name}</span>
+        <span className="text-text-muted">{manufacturer}</span>
+        <span className="text-text-hint line-clamp-2 text-sm">{efficacy}</span>
+      </div>
+      <div className="flex gap-3">
+        <Link
+          href={`/medicine/${id}`}
+          className="bg-button text-text-reverse-base hover:bg-hover-color flex cursor-pointer items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+        >
+          등록
+        </Link>
+      </div>
+    </div>
+  );
+}

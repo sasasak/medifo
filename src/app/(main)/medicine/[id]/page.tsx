@@ -1,0 +1,74 @@
+import { createClient } from '@/utils/supabase/server';
+import { notFound } from 'next/navigation';
+import MedicineInfo from './_components/MedicineInfo';
+import MedicineAccordion from './_components/MedicineAccordion';
+import ContraindicationAlert from './_components/ContraindicationAlert';
+import MedicineRegister from './_components/MedicineRegister';
+import BackButton from './_components/BackButton';
+
+interface MedicineDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function MedicineDetailPage({
+  params,
+}: MedicineDetailPageProps) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: medicine } = await supabase
+    .from('medicines')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (!medicine) notFound();
+
+  const { data: existingMedicine } = await supabase
+    .from('user_medicines')
+    .select('id, times, frequency, repeat_type, start_date')
+    .eq('user_id', user?.id)
+    .eq('medicine_id', id)
+    .limit(1)
+    .single();
+
+  return (
+    <section className="p-6">
+      <BackButton name={medicine.name} />
+      <MedicineInfo
+        name={medicine.name}
+        manufacturer={medicine.manufacturer}
+        efficacy={medicine.efficacy}
+        imageUrl={medicine.image_url}
+      />
+      <ContraindicationAlert contraindications={medicine.contraindications} />
+      <MedicineAccordion
+        efficacy={medicine.efficacy}
+        usage={medicine.usage}
+        warnings={medicine.warnings}
+        precautions={medicine.precautions}
+        interactions={medicine.interactions}
+        sideEffects={medicine.side_effects}
+        storage={medicine.storage}
+      />
+      <MedicineRegister
+        medicineId={id}
+        userId={user?.id ?? ''}
+        existingData={
+          existingMedicine
+            ? {
+                id: existingMedicine.id,
+                times: existingMedicine.times,
+                frequency: existingMedicine.frequency,
+                repeatType: existingMedicine.repeat_type,
+                startDate: existingMedicine.start_date,
+              }
+            : null
+        }
+      />
+    </section>
+  );
+}
