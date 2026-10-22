@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef } from 'react';
 import type {
+  KakaoAddress,
   KakaoCustomOverlay,
   KakaoMapInstance,
   KakaoMarker,
@@ -9,6 +10,10 @@ import type {
   KakaoSearchStatus,
 } from '../kakao';
 import type { MapTarget, Pharmacy, SelectedPlace } from '../types';
+
+// 지역 검색 반경 단계(m). 결과가 MIN_REGION_RESULTS건 미만이면 다음 반경으로 넓힘
+const REGION_RADIUS_STEPS = [1000, 3000, 5000];
+const MIN_REGION_RESULTS = 5;
 
 interface KakaoMapProps {
   mapTarget: MapTarget;
@@ -27,6 +32,11 @@ export default function KakaoMap({
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
   };
+
+  const clearResults = useEffectEvent(() => {
+    clearMarkers();
+    onPharmaciesFound([]);
+  });
 
   const searchNearbyPharmacy = useEffectEvent(
     (place: SelectedPlace, isStale: () => boolean) => {
@@ -124,36 +134,58 @@ export default function KakaoMap({
       if (!mapInstanceRef.current) return;
 
       const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(
-        '약국',
-        (data: KakaoPlace[], status: KakaoSearchStatus) => {
-          if (isStale()) return;
-          if (status === window.kakao.maps.services.Status.OK) {
-            clearMarkers();
-            data.forEach((place) => {
-              const position = new window.kakao.maps.LatLng(place.y, place.x);
-              const marker = new window.kakao.maps.Marker({
-                map: mapInstanceRef.current,
-                position,
-              });
-              markersRef.current.push(marker);
+      const location = new window.kakao.maps.LatLng(latitude, longitude);
 
-              const overlay = new window.kakao.maps.CustomOverlay({
-                map: mapInstanceRef.current,
-                position,
-                content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
-                yAnchor: 2.5,
+      const searchWithin = (stepIndex: number) => {
+        ps.keywordSearch(
+          '약국',
+          (data: KakaoPlace[], status: KakaoSearchStatus) => {
+            if (isStale()) return;
+
+            const { OK, ZERO_RESULT } = window.kakao.maps.services.Status;
+            const count = status === OK ? data.length : 0;
+            const isLastStep = stepIndex === REGION_RADIUS_STEPS.length - 1;
+            if (
+              (status === OK || status === ZERO_RESULT) &&
+              count < MIN_REGION_RESULTS &&
+              !isLastStep
+            ) {
+              searchWithin(stepIndex + 1);
+              return;
+            }
+
+            if (status === OK) {
+              clearMarkers();
+              data.forEach((place) => {
+                const position = new window.kakao.maps.LatLng(place.y, place.x);
+                const marker = new window.kakao.maps.Marker({
+                  map: mapInstanceRef.current,
+                  position,
+                });
+                markersRef.current.push(marker);
+
+                const overlay = new window.kakao.maps.CustomOverlay({
+                  map: mapInstanceRef.current,
+                  position,
+                  content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
+                  yAnchor: 2.5,
+                });
+                markersRef.current.push(overlay);
               });
-              markersRef.current.push(overlay);
-            });
-            onPharmaciesFound(data);
-          }
-        },
-        {
-          location: new window.kakao.maps.LatLng(latitude, longitude),
-          radius: 1000,
-        },
-      );
+              onPharmaciesFound(data);
+            } else if (status === ZERO_RESULT) {
+              clearResults();
+            }
+          },
+          {
+            location,
+            radius: REGION_RADIUS_STEPS[stepIndex],
+            sort: window.kakao.maps.services.SortBy.DISTANCE,
+          },
+        );
+      };
+
+      searchWithin(0);
     },
   );
 
@@ -204,20 +236,39 @@ export default function KakaoMap({
       mapInstanceRef.current.setCenter(newCenter);
       searchNearbyPharmacy(place, isStale);
     } else if (mapTarget.mode === 'region' && mapTarget.query.trim()) {
-      const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(
-        mapTarget.query + ' 약국',
-        (data: KakaoPlace[], status: KakaoSearchStatus) => {
+      const { query } = mapTarget;
+
+      const moveAndSearch = (y: string, x: string) => {
+        const newCenter = new window.kakao.maps.LatLng(y, x);
+        mapInstanceRef.current!.setCenter(newCenter);
+        searchPharmacy(Number(y), Number(x), isStale);
+      };
+
+      // 지역명은 주소 검색 결과의 중심 좌표를 쓰고, 주소 결과가 없으면(약국 이름, 역 이름 등) 키워드 검색 첫 결과를 씀
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch(
+        query,
+        (result: KakaoAddress[], status: KakaoSearchStatus) => {
           if (isStale()) return;
           if (status === window.kakao.maps.services.Status.OK) {
-            const firstPlace = data[0];
-            const newCenter = new window.kakao.maps.LatLng(
-              firstPlace.y,
-              firstPlace.x,
-            );
-            mapInstanceRef.current!.setCenter(newCenter);
-            searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
+            moveAndSearch(result[0].y, result[0].x);
+            return;
           }
+
+          const ps = new window.kakao.maps.services.Places();
+          ps.keywordSearch(
+            query + ' 약국',
+            (data: KakaoPlace[], status: KakaoSearchStatus) => {
+              if (isStale()) return;
+              if (status === window.kakao.maps.services.Status.OK) {
+                moveAndSearch(data[0].y, data[0].x);
+              } else if (
+                status === window.kakao.maps.services.Status.ZERO_RESULT
+              ) {
+                clearResults();
+              }
+            },
+          );
         },
       );
     }
