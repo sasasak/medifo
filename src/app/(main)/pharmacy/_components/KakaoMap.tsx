@@ -33,6 +33,11 @@ export default function KakaoMap({
     markersRef.current = [];
   };
 
+  const clearResults = useEffectEvent(() => {
+    clearMarkers();
+    onPharmaciesFound([]);
+  });
+
   const searchNearbyPharmacy = useEffectEvent(
     (place: SelectedPlace, isStale: () => boolean) => {
       if (!mapInstanceRef.current) return;
@@ -168,6 +173,8 @@ export default function KakaoMap({
                 markersRef.current.push(overlay);
               });
               onPharmaciesFound(data);
+            } else if (status === ZERO_RESULT) {
+              clearResults();
             }
           },
           {
@@ -255,6 +262,10 @@ export default function KakaoMap({
               if (isStale()) return;
               if (status === window.kakao.maps.services.Status.OK) {
                 moveAndSearch(data[0].y, data[0].x);
+              } else if (
+                status === window.kakao.maps.services.Status.ZERO_RESULT
+              ) {
+                clearResults();
               }
             },
           );
