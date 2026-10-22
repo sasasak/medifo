@@ -1,7 +1,10 @@
 // 카카오 지도 SDK 중 이 프로젝트에서 실제로 쓰는 부분만 선언함 (타입 패키지 없이 직접 관리)
 
-// keywordSearch 콜백이 받는 검색 상태 값. 코드에서는 OK와만 비교함
+// keywordSearch 콜백이 받는 검색 상태 값. 코드에서는 OK, ZERO_RESULT와 비교함
 export type KakaoSearchStatus = 'OK' | 'ZERO_RESULT' | 'ERROR';
+
+// keywordSearch 정렬 기준 값
+export type KakaoSortBy = 'accuracy' | 'distance';
 
 // keywordSearch 결과 중 사용하는 필드
 export interface KakaoPlace {
@@ -45,6 +48,7 @@ export interface KakaoPlaces {
       location?: KakaoLatLng;
       radius?: number;
       category_group_code?: string;
+      sort?: KakaoSortBy;
     },
   ): void;
 }
@@ -82,7 +86,8 @@ interface KakaoMaps {
   services: {
     Places: new () => KakaoPlaces;
     Geocoder: new () => KakaoGeocoder;
-    Status: { OK: 'OK' };
+    Status: { OK: 'OK'; ZERO_RESULT: 'ZERO_RESULT' };
+    SortBy: { DISTANCE: 'distance' };
   };
 }
 

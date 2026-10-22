@@ -11,6 +11,10 @@ import type {
 } from '../kakao';
 import type { MapTarget, Pharmacy, SelectedPlace } from '../types';
 
+// 지역 검색 반경 단계(m). 결과가 MIN_REGION_RESULTS건 미만이면 다음 반경으로 넓힘
+const REGION_RADIUS_STEPS = [1000, 3000, 5000];
+const MIN_REGION_RESULTS = 3;
+
 interface KakaoMapProps {
   mapTarget: MapTarget;
   onPharmaciesFound: (pharmacies: Pharmacy[]) => void;
@@ -125,36 +129,56 @@ export default function KakaoMap({
       if (!mapInstanceRef.current) return;
 
       const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(
-        '약국',
-        (data: KakaoPlace[], status: KakaoSearchStatus) => {
-          if (isStale()) return;
-          if (status === window.kakao.maps.services.Status.OK) {
-            clearMarkers();
-            data.forEach((place) => {
-              const position = new window.kakao.maps.LatLng(place.y, place.x);
-              const marker = new window.kakao.maps.Marker({
-                map: mapInstanceRef.current,
-                position,
-              });
-              markersRef.current.push(marker);
+      const location = new window.kakao.maps.LatLng(latitude, longitude);
 
-              const overlay = new window.kakao.maps.CustomOverlay({
-                map: mapInstanceRef.current,
-                position,
-                content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
-                yAnchor: 2.5,
+      const searchWithin = (stepIndex: number) => {
+        ps.keywordSearch(
+          '약국',
+          (data: KakaoPlace[], status: KakaoSearchStatus) => {
+            if (isStale()) return;
+
+            const { OK, ZERO_RESULT } = window.kakao.maps.services.Status;
+            const count = status === OK ? data.length : 0;
+            const isLastStep = stepIndex === REGION_RADIUS_STEPS.length - 1;
+            if (
+              (status === OK || status === ZERO_RESULT) &&
+              count < MIN_REGION_RESULTS &&
+              !isLastStep
+            ) {
+              searchWithin(stepIndex + 1);
+              return;
+            }
+
+            if (status === OK) {
+              clearMarkers();
+              data.forEach((place) => {
+                const position = new window.kakao.maps.LatLng(place.y, place.x);
+                const marker = new window.kakao.maps.Marker({
+                  map: mapInstanceRef.current,
+                  position,
+                });
+                markersRef.current.push(marker);
+
+                const overlay = new window.kakao.maps.CustomOverlay({
+                  map: mapInstanceRef.current,
+                  position,
+                  content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
+                  yAnchor: 2.5,
+                });
+                markersRef.current.push(overlay);
               });
-              markersRef.current.push(overlay);
-            });
-            onPharmaciesFound(data);
-          }
-        },
-        {
-          location: new window.kakao.maps.LatLng(latitude, longitude),
-          radius: 1000,
-        },
-      );
+              onPharmaciesFound(data);
+            }
+          },
+          {
+            location,
+            radius: REGION_RADIUS_STEPS[stepIndex],
+            sort: window.kakao.maps.services.SortBy.DISTANCE,
+          },
+        );
+      };
+
+      searchWithin(0);
     },
   );
 
