@@ -14,6 +14,12 @@ export interface KakaoPlace {
   y: string;
 }
 
+// addressSearch 결과 중 사용하는 필드
+export interface KakaoAddress {
+  x: string;
+  y: string;
+}
+
 // 내부 구조를 쓰지 않고 SDK에 다시 넘기기만 하는 객체
 export type KakaoLatLng = object;
 export type KakaoSize = object;
@@ -43,6 +49,13 @@ export interface KakaoPlaces {
   ): void;
 }
 
+export interface KakaoGeocoder {
+  addressSearch(
+    query: string,
+    callback: (result: KakaoAddress[], status: KakaoSearchStatus) => void,
+  ): void;
+}
+
 interface KakaoMaps {
   load(callback: () => void): void;
   // 검색 결과의 문자열 좌표(x, y)도 그대로 넘기고 있어 string도 받음
@@ -68,6 +81,7 @@ interface KakaoMaps {
   MarkerImage: new (src: string, size: KakaoSize) => KakaoMarkerImage;
   services: {
     Places: new () => KakaoPlaces;
+    Geocoder: new () => KakaoGeocoder;
     Status: { OK: 'OK' };
   };
 }

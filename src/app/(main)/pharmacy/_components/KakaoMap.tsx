@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef } from 'react';
 import type {
+  KakaoAddress,
   KakaoCustomOverlay,
   KakaoMapInstance,
   KakaoMarker,
@@ -204,20 +205,35 @@ export default function KakaoMap({
       mapInstanceRef.current.setCenter(newCenter);
       searchNearbyPharmacy(place, isStale);
     } else if (mapTarget.mode === 'region' && mapTarget.query.trim()) {
-      const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(
-        mapTarget.query + ' 약국',
-        (data: KakaoPlace[], status: KakaoSearchStatus) => {
+      const { query } = mapTarget;
+
+      const moveAndSearch = (y: string, x: string) => {
+        const newCenter = new window.kakao.maps.LatLng(y, x);
+        mapInstanceRef.current!.setCenter(newCenter);
+        searchPharmacy(Number(y), Number(x), isStale);
+      };
+
+      // 지역명은 주소 검색 결과의 중심 좌표를 쓰고, 주소 결과가 없으면(약국 이름, 역 이름 등) 키워드 검색 첫 결과를 씀
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch(
+        query,
+        (result: KakaoAddress[], status: KakaoSearchStatus) => {
           if (isStale()) return;
           if (status === window.kakao.maps.services.Status.OK) {
-            const firstPlace = data[0];
-            const newCenter = new window.kakao.maps.LatLng(
-              firstPlace.y,
-              firstPlace.x,
-            );
-            mapInstanceRef.current!.setCenter(newCenter);
-            searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
+            moveAndSearch(result[0].y, result[0].x);
+            return;
           }
+
+          const ps = new window.kakao.maps.services.Places();
+          ps.keywordSearch(
+            query + ' 약국',
+            (data: KakaoPlace[], status: KakaoSearchStatus) => {
+              if (isStale()) return;
+              if (status === window.kakao.maps.services.Status.OK) {
+                moveAndSearch(data[0].y, data[0].x);
+              }
+            },
+          );
         },
       );
     }
