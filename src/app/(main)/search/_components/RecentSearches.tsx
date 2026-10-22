@@ -18,22 +18,30 @@ export default function RecentSearches({
 }: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
 
-  const fetchRecentSearches = async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('user_search_history')
-      .select('id, term')
-      .eq('user_id', userId)
-      .order('searched_at', { ascending: false })
-      .limit(5);
-
-    if (data) {
-      setRecentSearches(data.map((item) => ({ id: item.id, term: item.term })));
-    }
-  };
-
   useEffect(() => {
+    let ignore = false;
+
+    const fetchRecentSearches = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('user_search_history')
+        .select('id, term')
+        .eq('user_id', userId)
+        .order('searched_at', { ascending: false })
+        .limit(5);
+
+      if (data && !ignore) {
+        setRecentSearches(
+          data.map((item) => ({ id: item.id, term: item.term })),
+        );
+      }
+    };
+
     fetchRecentSearches();
+
+    return () => {
+      ignore = true;
+    };
   }, [userId]);
 
   const handleDeleteAll = async () => {
