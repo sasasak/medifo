@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { Plus } from 'lucide-react';
-import { useEffect, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
 import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
@@ -45,24 +45,16 @@ export default function MedicineRegister({
   userId,
   existingData,
 }: MedicineRegisterProps) {
-  const [times, setTimes] = useState<string[]>([]);
-  const [repeatType, setRepeatType] = useState<RepeatType>('daily');
-  const [startDate, setStartDate] = useState(() => toDateString(new Date()));
+  const [times, setTimes] = useState<string[]>(existingData?.times || []);
+  const [repeatType, setRepeatType] = useState<RepeatType>(
+    existingData?.repeatType || 'daily',
+  );
+  const [startDate, setStartDate] = useState(
+    () => existingData?.startDate || toDateString(new Date()),
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  useEffect(() => {
-    if (existingData?.times) {
-      setTimes(existingData.times);
-    }
-    if (existingData?.repeatType) {
-      setRepeatType(existingData.repeatType);
-    }
-    if (existingData?.startDate) {
-      setStartDate(existingData.startDate);
-    }
-  }, [existingData]);
 
   const handleAddTime = () => {
     setTimes((prev) => [...prev, '']);
