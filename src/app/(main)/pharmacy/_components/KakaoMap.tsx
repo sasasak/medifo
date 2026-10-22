@@ -1,27 +1,13 @@
 'use client';
 
 import { useEffect, useEffectEvent, useRef } from 'react';
+import type { MapTarget, SelectedPlace } from '../types';
 
 declare global {
   interface Window {
     kakao: any;
   }
 }
-
-interface SelectedPlace {
-  id: string;
-  name: string;
-  x: string;
-  y: string;
-  place_name: string;
-  address_name: string;
-  phone: string;
-}
-
-type MapTarget =
-  | { mode: 'region'; query: string }
-  | { mode: 'pharmacy'; place: SelectedPlace }
-  | { mode: 'idle' };
 
 interface KakaoMapProps {
   mapTarget: MapTarget;

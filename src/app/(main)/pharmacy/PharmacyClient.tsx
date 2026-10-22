@@ -4,21 +4,7 @@ import { useState } from 'react';
 import KakaoMap from './_components/KakaoMap';
 import PharmacySearchBar from './_components/PharmacySearchBar';
 import PharmacyList from './_components/PharmacyList';
-
-interface SelectedPlace {
-  id: string;
-  name: string;
-  x: string;
-  y: string;
-  place_name: string;
-  address_name: string;
-  phone: string;
-}
-
-export type MapTarget =
-  | { mode: 'region'; query: string }
-  | { mode: 'pharmacy'; place: SelectedPlace }
-  | { mode: 'idle' };
+import type { MapTarget, SelectedPlace } from './types';
 
 export default function PharmacyClient() {
   const [searchQuery, setSearchQuery] = useState('');

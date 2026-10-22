@@ -2,16 +2,7 @@
 
 import { Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
-interface SelectedPlace {
-  id: string;
-  name: string;
-  x: string;
-  y: string;
-  place_name: string;
-  address_name: string;
-  phone: string;
-}
+import type { SelectedPlace } from '../types';
 
 interface PharmacySearchBarProps {
   searchQuery: string;
