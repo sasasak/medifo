@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -41,134 +41,136 @@ export default function KakaoMap({
     markersRef.current = [];
   };
 
-  const searchNearbyPharmacy = (place: SelectedPlace, isStale: () => boolean) => {
-    if (!mapInstanceRef.current) return;
+  const searchNearbyPharmacy = useEffectEvent(
+    (place: SelectedPlace, isStale: () => boolean) => {
+      if (!mapInstanceRef.current) return;
 
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(
-      '약국',
-      (data: any, status: any) => {
-        if (isStale()) return;
-        if (status === window.kakao.maps.services.Status.OK) {
-          clearMarkers();
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(
+        '약국',
+        (data: any, status: any) => {
+          if (isStale()) return;
+          if (status === window.kakao.maps.services.Status.OK) {
+            clearMarkers();
 
-          const selectedPosition = new window.kakao.maps.LatLng(
-            place.y,
-            place.x,
-          );
-          const selectedMarker = new window.kakao.maps.Marker({
-            map: mapInstanceRef.current,
-            position: selectedPosition,
-            zIndex: 10,
-          });
-          markersRef.current.push(selectedMarker);
-
-          const selectedOverlay = new window.kakao.maps.CustomOverlay({
-            map: mapInstanceRef.current,
-            position: selectedPosition,
-            content: `<div style="background: #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: white; font-weight: bold; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
-            yAnchor: 2.5,
-            zIndex: 10,
-          });
-          markersRef.current.push(selectedOverlay);
-
-          const smallMarkerSize = new window.kakao.maps.Size(16, 24);
-          const smallMarkerImage = new window.kakao.maps.MarkerImage(
-            'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png',
-            smallMarkerSize,
-          );
-
-          const nearby = data.filter((p: any) => p.id !== place.id).slice(0, 3);
-
-          nearby.forEach((nearbyPlace: any) => {
-            const position = new window.kakao.maps.LatLng(
-              nearbyPlace.y,
-              nearbyPlace.x,
+            const selectedPosition = new window.kakao.maps.LatLng(
+              place.y,
+              place.x,
             );
-            const marker = new window.kakao.maps.Marker({
+            const selectedMarker = new window.kakao.maps.Marker({
               map: mapInstanceRef.current,
-              position,
-              image: smallMarkerImage,
+              position: selectedPosition,
+              zIndex: 10,
             });
-            markersRef.current.push(marker);
+            markersRef.current.push(selectedMarker);
 
-            const overlay = new window.kakao.maps.CustomOverlay({
+            const selectedOverlay = new window.kakao.maps.CustomOverlay({
               map: mapInstanceRef.current,
-              position,
-              content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 11px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${nearbyPlace.place_name}</div>`,
+              position: selectedPosition,
+              content: `<div style="background: #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: white; font-weight: bold; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
               yAnchor: 2.5,
+              zIndex: 10,
             });
-            markersRef.current.push(overlay);
-          });
+            markersRef.current.push(selectedOverlay);
 
-          onPharmaciesFound([
-            {
-              id: place.id,
-              place_name: place.place_name,
-              address_name: place.address_name,
-              phone: place.phone,
-              distance: '',
-              x: place.x,
-              y: place.y,
-            },
-            ...nearby.map((p: any) => ({
-              id: p.id,
-              place_name: p.place_name,
-              address_name: p.address_name,
-              phone: p.phone,
-              distance: p.distance,
-              x: p.x,
-              y: p.y,
-            })),
-          ]);
-        }
-      },
-      {
-        location: new window.kakao.maps.LatLng(place.y, place.x),
-        radius: 1000,
-      },
-    );
-  };
+            const smallMarkerSize = new window.kakao.maps.Size(16, 24);
+            const smallMarkerImage = new window.kakao.maps.MarkerImage(
+              'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png',
+              smallMarkerSize,
+            );
 
-  const searchPharmacy = (
-    latitude: number,
-    longitude: number,
-    isStale: () => boolean,
-  ) => {
-    if (!mapInstanceRef.current) return;
+            const nearby = data
+              .filter((p: any) => p.id !== place.id)
+              .slice(0, 3);
 
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(
-      '약국',
-      (data: any, status: any) => {
-        if (isStale()) return;
-        if (status === window.kakao.maps.services.Status.OK) {
-          clearMarkers();
-          data.forEach((place: any) => {
-            const position = new window.kakao.maps.LatLng(place.y, place.x);
-            const marker = new window.kakao.maps.Marker({
-              map: mapInstanceRef.current,
-              position,
+            nearby.forEach((nearbyPlace: any) => {
+              const position = new window.kakao.maps.LatLng(
+                nearbyPlace.y,
+                nearbyPlace.x,
+              );
+              const marker = new window.kakao.maps.Marker({
+                map: mapInstanceRef.current,
+                position,
+                image: smallMarkerImage,
+              });
+              markersRef.current.push(marker);
+
+              const overlay = new window.kakao.maps.CustomOverlay({
+                map: mapInstanceRef.current,
+                position,
+                content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 11px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${nearbyPlace.place_name}</div>`,
+                yAnchor: 2.5,
+              });
+              markersRef.current.push(overlay);
             });
-            markersRef.current.push(marker);
 
-            const overlay = new window.kakao.maps.CustomOverlay({
-              map: mapInstanceRef.current,
-              position,
-              content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
-              yAnchor: 2.5,
+            onPharmaciesFound([
+              {
+                id: place.id,
+                place_name: place.place_name,
+                address_name: place.address_name,
+                phone: place.phone,
+                distance: '',
+                x: place.x,
+                y: place.y,
+              },
+              ...nearby.map((p: any) => ({
+                id: p.id,
+                place_name: p.place_name,
+                address_name: p.address_name,
+                phone: p.phone,
+                distance: p.distance,
+                x: p.x,
+                y: p.y,
+              })),
+            ]);
+          }
+        },
+        {
+          location: new window.kakao.maps.LatLng(place.y, place.x),
+          radius: 1000,
+        },
+      );
+    },
+  );
+
+  const searchPharmacy = useEffectEvent(
+    (latitude: number, longitude: number, isStale: () => boolean) => {
+      if (!mapInstanceRef.current) return;
+
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(
+        '약국',
+        (data: any, status: any) => {
+          if (isStale()) return;
+          if (status === window.kakao.maps.services.Status.OK) {
+            clearMarkers();
+            data.forEach((place: any) => {
+              const position = new window.kakao.maps.LatLng(place.y, place.x);
+              const marker = new window.kakao.maps.Marker({
+                map: mapInstanceRef.current,
+                position,
+              });
+              markersRef.current.push(marker);
+
+              const overlay = new window.kakao.maps.CustomOverlay({
+                map: mapInstanceRef.current,
+                position,
+                content: `<div style="background: white; border: 1px solid #1d9e75; border-radius: 8px; padding: 2px 8px; font-size: 12px; white-space: nowrap; color: #04342c; pointer-events: none; position: relative; z-index: -1;">${place.place_name}</div>`,
+                yAnchor: 2.5,
+              });
+              markersRef.current.push(overlay);
             });
-            markersRef.current.push(overlay);
-          });
-          onPharmaciesFound(data);
-        }
-      },
-      {
-        location: new window.kakao.maps.LatLng(latitude, longitude),
-        radius: 1000,
-      },
-    );
-  };
+            onPharmaciesFound(data);
+          }
+        },
+        {
+          location: new window.kakao.maps.LatLng(latitude, longitude),
+          radius: 1000,
+        },
+      );
+    },
+  );
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -218,21 +220,18 @@ export default function KakaoMap({
       searchNearbyPharmacy(place, isStale);
     } else if (mapTarget.mode === 'region' && mapTarget.query.trim()) {
       const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(
-        mapTarget.query + ' 약국',
-        (data: any, status: any) => {
-          if (isStale()) return;
-          if (status === window.kakao.maps.services.Status.OK) {
-            const firstPlace = data[0];
-            const newCenter = new window.kakao.maps.LatLng(
-              firstPlace.y,
-              firstPlace.x,
-            );
-            mapInstanceRef.current.setCenter(newCenter);
-            searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
-          }
-        },
-      );
+      ps.keywordSearch(mapTarget.query + ' 약국', (data: any, status: any) => {
+        if (isStale()) return;
+        if (status === window.kakao.maps.services.Status.OK) {
+          const firstPlace = data[0];
+          const newCenter = new window.kakao.maps.LatLng(
+            firstPlace.y,
+            firstPlace.x,
+          );
+          mapInstanceRef.current.setCenter(newCenter);
+          searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
+        }
+      });
     }
 
     return () => {
