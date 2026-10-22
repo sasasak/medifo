@@ -4,12 +4,12 @@ import { useState } from 'react';
 import KakaoMap from './_components/KakaoMap';
 import PharmacySearchBar from './_components/PharmacySearchBar';
 import PharmacyList from './_components/PharmacyList';
-import type { MapTarget, SelectedPlace } from './types';
+import type { MapTarget, Pharmacy, SelectedPlace } from './types';
 
 export default function PharmacyClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mapTarget, setMapTarget] = useState<MapTarget>({ mode: 'idle' });
-  const [pharmacies, setPharmacies] = useState<any[]>([]);
+  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
 
   const handleSearch = () => {
     setMapTarget({ mode: 'region', query: searchQuery });
@@ -19,7 +19,7 @@ export default function PharmacyClient() {
     setMapTarget({ mode: 'pharmacy', place });
   };
 
-  const handleSelectPharmacy = (pharmacy: any) => {
+  const handleSelectPharmacy = (pharmacy: Pharmacy) => {
     setMapTarget({
       mode: 'pharmacy',
       place: {

@@ -2,6 +2,7 @@
 
 import { Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import type { KakaoPlace, KakaoPlaces, KakaoSearchStatus } from '../kakao';
 import type { SelectedPlace } from '../types';
 
 interface PharmacySearchBarProps {
@@ -17,10 +18,10 @@ export default function PharmacySearchBar({
   onSelectPlace,
   onSearch,
 }: PharmacySearchBarProps) {
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<KakaoPlace[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const psRef = useRef<any>(null);
+  const psRef = useRef<KakaoPlaces | null>(null);
   const isSelectingRef = useRef(false);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function PharmacySearchBar({
 
     psRef.current.keywordSearch(
       searchQuery,
-      (data: any, status: any) => {
+      (data: KakaoPlace[], status: KakaoSearchStatus) => {
         if (status === window.kakao.maps.services.Status.OK) {
           setSuggestions(data);
           setShowSuggestions(true);
@@ -65,7 +66,7 @@ export default function PharmacySearchBar({
     );
   }, [searchQuery]);
 
-  const handleSelect = (place: any) => {
+  const handleSelect = (place: KakaoPlace) => {
     isSelectingRef.current = true;
     setSearchQuery(place.place_name);
     setSuggestions([]);

@@ -1,17 +1,18 @@
 'use client';
 
 import { useEffect, useEffectEvent, useRef } from 'react';
-import type { MapTarget, SelectedPlace } from '../types';
-
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+import type {
+  KakaoCustomOverlay,
+  KakaoMapInstance,
+  KakaoMarker,
+  KakaoPlace,
+  KakaoSearchStatus,
+} from '../kakao';
+import type { MapTarget, Pharmacy, SelectedPlace } from '../types';
 
 interface KakaoMapProps {
   mapTarget: MapTarget;
-  onPharmaciesFound: (pharmacies: any[]) => void;
+  onPharmaciesFound: (pharmacies: Pharmacy[]) => void;
 }
 
 export default function KakaoMap({
@@ -19,8 +20,8 @@ export default function KakaoMap({
   onPharmaciesFound,
 }: KakaoMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const mapInstanceRef = useRef<KakaoMapInstance | null>(null);
+  const markersRef = useRef<(KakaoMarker | KakaoCustomOverlay)[]>([]);
 
   const clearMarkers = () => {
     markersRef.current.forEach((marker) => marker.setMap(null));
@@ -34,7 +35,7 @@ export default function KakaoMap({
       const ps = new window.kakao.maps.services.Places();
       ps.keywordSearch(
         '약국',
-        (data: any, status: any) => {
+        (data: KakaoPlace[], status: KakaoSearchStatus) => {
           if (isStale()) return;
           if (status === window.kakao.maps.services.Status.OK) {
             clearMarkers();
@@ -65,11 +66,9 @@ export default function KakaoMap({
               smallMarkerSize,
             );
 
-            const nearby = data
-              .filter((p: any) => p.id !== place.id)
-              .slice(0, 3);
+            const nearby = data.filter((p) => p.id !== place.id).slice(0, 3);
 
-            nearby.forEach((nearbyPlace: any) => {
+            nearby.forEach((nearbyPlace) => {
               const position = new window.kakao.maps.LatLng(
                 nearbyPlace.y,
                 nearbyPlace.x,
@@ -100,7 +99,7 @@ export default function KakaoMap({
                 x: place.x,
                 y: place.y,
               },
-              ...nearby.map((p: any) => ({
+              ...nearby.map((p) => ({
                 id: p.id,
                 place_name: p.place_name,
                 address_name: p.address_name,
@@ -127,11 +126,11 @@ export default function KakaoMap({
       const ps = new window.kakao.maps.services.Places();
       ps.keywordSearch(
         '약국',
-        (data: any, status: any) => {
+        (data: KakaoPlace[], status: KakaoSearchStatus) => {
           if (isStale()) return;
           if (status === window.kakao.maps.services.Status.OK) {
             clearMarkers();
-            data.forEach((place: any) => {
+            data.forEach((place) => {
               const position = new window.kakao.maps.LatLng(place.y, place.x);
               const marker = new window.kakao.maps.Marker({
                 map: mapInstanceRef.current,
@@ -175,7 +174,7 @@ export default function KakaoMap({
             level: 3,
           };
           mapInstanceRef.current = new window.kakao.maps.Map(
-            mapRef.current,
+            mapRef.current!,
             options,
           );
         };
@@ -206,18 +205,21 @@ export default function KakaoMap({
       searchNearbyPharmacy(place, isStale);
     } else if (mapTarget.mode === 'region' && mapTarget.query.trim()) {
       const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(mapTarget.query + ' 약국', (data: any, status: any) => {
-        if (isStale()) return;
-        if (status === window.kakao.maps.services.Status.OK) {
-          const firstPlace = data[0];
-          const newCenter = new window.kakao.maps.LatLng(
-            firstPlace.y,
-            firstPlace.x,
-          );
-          mapInstanceRef.current.setCenter(newCenter);
-          searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
-        }
-      });
+      ps.keywordSearch(
+        mapTarget.query + ' 약국',
+        (data: KakaoPlace[], status: KakaoSearchStatus) => {
+          if (isStale()) return;
+          if (status === window.kakao.maps.services.Status.OK) {
+            const firstPlace = data[0];
+            const newCenter = new window.kakao.maps.LatLng(
+              firstPlace.y,
+              firstPlace.x,
+            );
+            mapInstanceRef.current!.setCenter(newCenter);
+            searchPharmacy(Number(firstPlace.y), Number(firstPlace.x), isStale);
+          }
+        },
+      );
     }
 
     return () => {
