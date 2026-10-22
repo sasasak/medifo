@@ -13,7 +13,7 @@ import type { MapTarget, Pharmacy, SelectedPlace } from '../types';
 
 // 지역 검색 반경 단계(m). 결과가 MIN_REGION_RESULTS건 미만이면 다음 반경으로 넓힘
 const REGION_RADIUS_STEPS = [1000, 3000, 5000];
-const MIN_REGION_RESULTS = 3;
+const MIN_REGION_RESULTS = 5;
 
 interface KakaoMapProps {
   mapTarget: MapTarget;
