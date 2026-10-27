@@ -7,9 +7,14 @@ import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
 import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
 import {
-  medicineRegisterSchema,
+  createMedicineRegisterSchema,
   type RepeatType,
 } from '@/schemas/medicineRegisterSchema';
+import {
+  START_DATE_RANGE_MESSAGE,
+  getEditableFloor,
+  toDateString,
+} from '@/utils/intakeLogs/editableRange';
 
 const REPEAT_TYPE_OPTIONS: { value: RepeatType; label: string }[] = [
   { value: 'daily', label: '매일 반복' },
@@ -20,13 +25,6 @@ const FREQUENCY_LABEL: Record<RepeatType, string> = {
   daily: '매일',
   once: '1회',
 };
-
-function toDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
 
 interface MedicineRegisterProps {
   medicineId: string;
@@ -52,6 +50,9 @@ export default function MedicineRegister({
   const [startDate, setStartDate] = useState(
     () => existingData?.startDate || toDateString(new Date()),
   );
+  const [minStartDate] = useState(() =>
+    getEditableFloor(toDateString(new Date())),
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -76,7 +77,10 @@ export default function MedicineRegister({
   };
 
   const handleRegister = () => {
-    const parsed = medicineRegisterSchema.safeParse({
+    const parsed = createMedicineRegisterSchema({
+      minStartDate,
+      keepStartDate: existingData?.startDate,
+    }).safeParse({
       repeatType,
       startDate,
       times,
@@ -172,9 +176,13 @@ export default function MedicineRegister({
         <input
           type="date"
           value={startDate}
+          min={minStartDate}
           onChange={(e) => setStartDate(e.target.value)}
           className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm outline-none"
         />
+        <p className="text-text-muted mt-1 text-xs">
+          {START_DATE_RANGE_MESSAGE}
+        </p>
       </div>
 
       <div className="mt-6 flex items-center justify-between">
