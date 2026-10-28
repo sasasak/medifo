@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from '@/utils/supabase/client';
-import { Plus } from 'lucide-react';
+import { Info, Plus } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
@@ -24,6 +24,13 @@ const REPEAT_TYPE_OPTIONS: { value: RepeatType; label: string }[] = [
 const FREQUENCY_LABEL: Record<RepeatType, string> = {
   daily: '매일',
   once: '1회',
+};
+
+// 기존 약 수정 시: 날짜 항목을 눌러 들어와도 약 전체 일정을 수정하는 화면임을 안내
+const EDIT_NOTICE: Record<RepeatType, string> = {
+  daily:
+    '이 화면은 날짜와 관계없이 이 약의 전체 복용 일정을 수정합니다. 시간을 바꾸면 체크하지 않은 최근 7일과 오늘 이후 일정이 새 시간으로 바뀌고, 이미 체크한 날짜의 기록은 그대로 유지됩니다.',
+  once: '1회성 약은 가장 최근에 등록한 날짜가 표시됩니다. 이전에 체크한 날짜의 기록은 그대로 유지됩니다.',
 };
 
 interface MedicineRegisterProps {
@@ -154,6 +161,12 @@ export default function MedicineRegister({
 
   return (
     <div className="bg-card border-border-light mt-4 rounded-2xl border p-6">
+      {existingData && (
+        <div className="bg-card-muted text-text-muted mb-4 flex gap-2 rounded-xl p-3 text-sm">
+          <Info size={16} className="mt-0.5 shrink-0" />
+          <p>{EDIT_NOTICE[existingData.repeatType]}</p>
+        </div>
+      )}
       <span>복용 주기</span>
       <div className="mt-2 flex gap-2">
         {REPEAT_TYPE_OPTIONS.map((option) => (
