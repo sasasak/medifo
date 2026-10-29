@@ -145,7 +145,7 @@ export default function PharmacySearchBar({
               key={place.id}
               type="button"
               onClick={() => handleSelect(place)}
-              className={`border-border-light flex w-full flex-col gap-0.5 border-b px-4 py-3 text-left transition-colors last:border-none ${
+              className={`border-border-light flex w-full flex-col gap-0.5 border-b px-4 py-3 text-left transition-colors last:border-none focus-visible:-outline-offset-4 ${
                 index === activeIndex ? 'bg-card-muted' : 'hover:bg-card-muted'
               }`}
             >

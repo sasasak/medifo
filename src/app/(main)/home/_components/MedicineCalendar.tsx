@@ -57,10 +57,18 @@ export default function MedicineCalendar({
           {year}년 {month}월
         </span>
         <div className="flex gap-2">
-          <button onClick={prevMonth} type="button" className="cursor-pointer">
+          <button
+            onClick={prevMonth}
+            type="button"
+            className="cursor-pointer rounded-full"
+          >
             <ChevronLeft size={16} />
           </button>
-          <button onClick={nextMonth} type="button" className="cursor-pointer">
+          <button
+            onClick={nextMonth}
+            type="button"
+            className="cursor-pointer rounded-full"
+          >
             <ChevronRight size={16} />
           </button>
         </div>
