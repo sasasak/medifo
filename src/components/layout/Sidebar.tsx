@@ -55,7 +55,7 @@ export default function Sidebar() {
                 >
                   <Link
                     href={menu.href}
-                    className="flex h-full w-full items-center gap-3 px-5 text-sm"
+                    className="flex h-full w-full items-center gap-3 rounded-xl px-5 text-sm"
                     aria-current={isActive ? 'page' : undefined}
                   >
                     <Icon size={20} />
