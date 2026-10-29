@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface UserMedicineCardProps {
@@ -40,15 +41,18 @@ export default function UserMedicineCard({
   };
 
   return (
-    <div
-      className="bg-card border-border-light hover:bg-card-muted cursor-pointer rounded-2xl border p-4 transition-colors"
-      onClick={() => router.push(`/medicine/${medicineId}`)}
-    >
+    <div className="bg-card border-border-light hover:bg-card-muted relative cursor-pointer rounded-2xl border p-4 transition-colors">
+      {/* 카드 전체를 덮는 링크. 삭제 버튼을 링크 안에 넣지 않으려고 겹쳐 둠 */}
+      <Link
+        href={`/medicine/${medicineId}`}
+        aria-label={name}
+        className="absolute inset-0 rounded-2xl"
+      />
       <div className="flex items-center justify-between">
         <span className="font-bold">{name}</span>
         <button
           type="button"
-          className="text-text-muted hover:text-danger-400 cursor-pointer"
+          className="text-text-muted hover:text-danger-400 relative cursor-pointer"
           onClick={handleDelete}
         >
           <Trash2 size={16} />
