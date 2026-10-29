@@ -46,6 +46,9 @@ export default function MedicineCalendar({
     router.push(`/home?month=${query}&date=${dateStr}`);
   };
 
+  // 오늘은 date 없이 이동해 "오늘로 돌아가기" 링크와 같은 화면을 보여줌
+  const goToToday = () => goToMonth(year, month);
+
   return (
     <div className="bg-card border-border-light min-h-100 flex-1 rounded-2xl border p-6">
       <h2 className="text-xl font-semibold">이번 달 복용 현황</h2>
@@ -78,19 +81,21 @@ export default function MedicineCalendar({
           const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const isToday = dateStr === todayStr;
           const isFuture = dateStr > todayStr;
-          const isPast = dateStr < todayStr;
           const isSelected = dateStr === selectedDate;
           const status = statusByDate[dateStr];
+          const label = `${month}월 ${day}일${isToday ? ', 오늘' : ''}`;
 
           return (
             <div key={day} className="my-1 flex flex-col items-center gap-1">
               <button
                 type="button"
-                disabled={!isPast}
-                onClick={() => goToDate(dateStr)}
+                disabled={isFuture}
+                aria-label={label}
+                aria-current={isToday ? 'date' : undefined}
+                onClick={() => (isToday ? goToToday() : goToDate(dateStr))}
                 className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${
                   isToday
-                    ? 'bg-accent-400 text-white'
+                    ? 'bg-accent-400 cursor-pointer text-white'
                     : isFuture
                       ? 'text-text-muted cursor-not-allowed opacity-50'
                       : `cursor-pointer hover:bg-card-muted ${isSelected ? 'ring-accent-400 ring-2' : ''}`
