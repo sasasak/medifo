@@ -45,13 +45,14 @@ export default function UserMedicineCard({
       {/* 카드 전체를 덮는 링크. 삭제 버튼을 링크 안에 넣지 않으려고 겹쳐 둠 */}
       <Link
         href={`/medicine/${medicineId}`}
-        aria-label={name}
+        aria-label={`${name} 상세 보기`}
         className="absolute inset-0 rounded-2xl"
       />
       <div className="flex items-center justify-between">
         <span className="font-bold">{name}</span>
         <button
           type="button"
+          aria-label={`${name} 삭제`}
           className="text-text-muted hover:text-danger-400 relative cursor-pointer"
           onClick={handleDelete}
         >
