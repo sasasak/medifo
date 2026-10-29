@@ -83,12 +83,15 @@ export default function MedicineCalendar({
           const isFuture = dateStr > todayStr;
           const isSelected = dateStr === selectedDate;
           const status = statusByDate[dateStr];
+          const label = `${month}월 ${day}일${isToday ? ', 오늘' : ''}`;
 
           return (
             <div key={day} className="my-1 flex flex-col items-center gap-1">
               <button
                 type="button"
                 disabled={isFuture}
+                aria-label={label}
+                aria-current={isToday ? 'date' : undefined}
                 onClick={() => (isToday ? goToToday() : goToDate(dateStr))}
                 className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${
                   isToday
