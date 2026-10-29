@@ -95,7 +95,7 @@ export default function MedicineCalendar({
                 onClick={() => (isToday ? goToToday() : goToDate(dateStr))}
                 className={`mx-auto flex aspect-square w-8 items-center justify-center rounded-full text-xs ${
                   isToday
-                    ? 'bg-accent-400 text-white'
+                    ? 'bg-accent-400 cursor-pointer text-white'
                     : isFuture
                       ? 'text-text-muted cursor-not-allowed opacity-50'
                       : `cursor-pointer hover:bg-card-muted ${isSelected ? 'ring-accent-400 ring-2' : ''}`
