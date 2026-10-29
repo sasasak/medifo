@@ -61,21 +61,13 @@ export default function RecentSearches({
   return (
     <div>
       {recentSearches.length > 0 && (
-        <>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock size={16} className="text-text-muted" />
-              <span className="text-sm font-bold">최근 검색어</span>
-            </div>
-            <button
-              type="button"
-              onClick={handleDeleteAll}
-              className="text-text-muted cursor-pointer text-xs"
-            >
-              전체 삭제
-            </button>
+        // 전체 삭제는 화면에서는 제목 오른쪽에 두고, Tab 순서는 검색어 칩 다음이 되도록 DOM 맨 뒤에 둠
+        <div className="grid grid-cols-[1fr_auto] items-center">
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-text-muted" />
+            <span className="text-sm font-bold">최근 검색어</span>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="col-span-2 mt-3 flex flex-wrap gap-2">
             {recentSearches.map((item) => (
               <button
                 key={item.id}
@@ -88,7 +80,14 @@ export default function RecentSearches({
               </button>
             ))}
           </div>
-        </>
+          <button
+            type="button"
+            onClick={handleDeleteAll}
+            className="text-text-muted col-start-2 row-start-1 cursor-pointer text-xs"
+          >
+            전체 삭제
+          </button>
+        </div>
       )}
     </div>
   );
