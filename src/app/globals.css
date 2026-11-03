@@ -67,6 +67,7 @@
   --color-sidebar: var(--color-sidebar);
   --color-border-light: var(--color-border-light);
   --color-danger-border: var(--color-danger-border);
+  --color-focus-ring: var(--color-focus-ring);
 }
 
 /* ─── 시맨틱 토큰 (라이트 모드) ───────────────────────── */
@@ -87,6 +88,7 @@
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
   --color-danger-border: #e24b4a;
+  --color-focus-ring: #534ab7;
 }
 /* ─── 다크 모드 ────────────────────────────────────────── */
 .dark {
@@ -109,6 +111,7 @@
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
   --color-danger-border: #0f6e56;
+  --color-focus-ring: #cecbf6;
 }
 
 .dark .warning-bg {
@@ -121,4 +124,13 @@ body {
   background-color: var(--color-page);
   font-family: 'Pretendard', sans-serif;
   color: var(--color-text-base);
+}
+
+/* ─── 키보드 포커스링 ──────────────────────────────────── */
+/* base 레이어에 두어 outline-none 등 유틸리티 클래스가 우선하게 함 */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
 }

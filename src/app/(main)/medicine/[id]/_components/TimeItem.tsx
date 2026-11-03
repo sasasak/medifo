@@ -26,7 +26,7 @@ export default function TimeItem({
         type="time"
         value={time}
         onChange={(e) => onChange(index, e.target.value)}
-        className="border-none bg-transparent text-sm outline-none"
+        className="border-none bg-transparent text-sm"
       />
       <button
         type="button"

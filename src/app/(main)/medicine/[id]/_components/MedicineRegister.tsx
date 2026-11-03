@@ -191,7 +191,7 @@ export default function MedicineRegister({
           value={startDate}
           min={minStartDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm outline-none"
+          className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm"
         />
         <p className="text-text-muted mt-1 text-xs">
           {START_DATE_RANGE_MESSAGE}

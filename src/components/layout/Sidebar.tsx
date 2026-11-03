@@ -32,7 +32,11 @@ export default function Sidebar() {
             <p className="text-sidebar-text text-sm">건강한 복약 관리의 시작</p>
           </div>
         </div>
-        <nav aria-labelledby="sidemenu-title">
+        {/* 사이드바는 라이트 모드에서도 배경이 어두워 밝은 포커스링을 씀. 로그아웃 Modal이 aside 안에 있어 aside 대신 nav와 버튼에만 적용 */}
+        <nav
+          aria-labelledby="sidemenu-title"
+          className="[--color-focus-ring:var(--color-accent-100)]"
+        >
           <h2 id="sidemenu-title" className="sr-only">
             사이드바 메뉴
           </h2>
@@ -51,7 +55,7 @@ export default function Sidebar() {
                 >
                   <Link
                     href={menu.href}
-                    className="flex h-full w-full items-center gap-3 px-5 text-sm"
+                    className="flex h-full w-full items-center gap-3 rounded-xl px-5 text-sm"
                     aria-current={isActive ? 'page' : undefined}
                   >
                     <Icon size={20} />
@@ -76,7 +80,7 @@ export default function Sidebar() {
         <button
           type="button"
           onClick={() => SetIsModalOpen(true)}
-          className="text-sidebar-text hover:bg-card-muted flex w-full cursor-pointer items-center gap-3 rounded-xl px-5 py-4 text-sm transition-colors"
+          className="text-sidebar-text hover:bg-card-muted flex w-full cursor-pointer items-center gap-3 rounded-xl px-5 py-4 text-sm transition-colors [--color-focus-ring:var(--color-accent-100)]"
         >
           <LogOut size={20} />
           로그아웃
