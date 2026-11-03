@@ -15,17 +15,50 @@
 
 ## 화면
 
-<!-- 캡처 추가 예정 -->
+캡처는 다크 모드 기준이며 라이트 모드도 지원함
 
-- 로그인 / 회원가입
-- 홈 (오늘 복용할 약, 이번 달 복용 현황 달력, 많이 복용하는 약 주의사항)
-- 홈 지난 날짜 복용 기록
-- 약 검색 (최근 검색어, 많이 찾는 약, 검색 결과)
-- 약 상세 및 복용 등록·수정
-- 내 복용 약
-- 주변 약국
-- 마이페이지
-- 다크 모드
+<table>
+  <tr>
+    <th>홈</th>
+    <th>약 검색</th>
+  </tr>
+  <tr>
+    <td><img src="docs/images/home.png" alt="홈 화면: 오늘 복용할 약과 이번 달 복용 현황 달력, 많이 복용하는 약 주의사항 카드" width="400"></td>
+    <td><img src="docs/images/search.png" alt="약 검색 화면: 검색창과 최근 검색어, 많이 찾는 약 키워드 8개" width="400"></td>
+  </tr>
+  <tr>
+    <th>약 상세</th>
+    <th>주변 약국</th>
+  </tr>
+  <tr>
+    <td><img src="docs/images/medicine-detail.png" alt="약 상세 화면: 약 정보와 복용 방법·주의사항 항목, 복용 주기·시작 날짜·복용 시간 수정 영역" width="400"></td>
+    <td><img src="docs/images/pharmacy.png" alt="주변 약국 화면: 지역·약국 이름 검색창과 카카오 지도" width="400"></td>
+  </tr>
+</table>
+
+<details>
+<summary>로그인, 회원가입, 내 복용 약, 마이페이지</summary>
+
+<table>
+  <tr>
+    <th>로그인</th>
+    <th>회원가입</th>
+  </tr>
+  <tr>
+    <td><img src="docs/images/login.png" alt="로그인 화면: 이메일과 비밀번호 입력, 회원가입 링크" width="400"></td>
+    <td><img src="docs/images/signup.png" alt="회원가입 화면: 이메일, 비밀번호, 비밀번호 확인, 닉네임 입력" width="400"></td>
+  </tr>
+  <tr>
+    <th>내 복용 약</th>
+    <th>마이페이지</th>
+  </tr>
+  <tr>
+    <td><img src="docs/images/my-medicines.png" alt="내 복용 약 화면: 등록한 약 카드 5개와 복용 주기·시간, 삭제 버튼" width="400"></td>
+    <td><img src="docs/images/mypage.png" alt="마이페이지 화면: 프로필과 프로필 수정, 다크 모드·알림 설정 토글, 회원 탈퇴" width="400"></td>
+  </tr>
+</table>
+
+</details>
 
 ## 주요 기능
 
