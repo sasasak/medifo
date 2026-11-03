@@ -31,24 +31,24 @@
   </tr>
   <tr>
     <th>약 상세</th>
-    <th>주변 약국</th>
+    <th>내 복용 약</th>
   </tr>
   <tr>
     <td><img src="docs/images/medicine-detail.png" alt="약 상세 화면: 약 정보와 복용 방법·주의사항 항목, 복용 주기·시작 날짜·복용 시간 수정 영역" width="400"></td>
-    <td><img src="docs/images/pharmacy.png" alt="주변 약국 화면: 지역·약국 이름 검색창과 카카오 지도" width="400"></td>
+    <td><img src="docs/images/my-medicines.png" alt="내 복용 약 화면: 등록한 약 카드 5개와 복용 주기·시간, 삭제 버튼" width="400"></td>
   </tr>
   <tr>
-    <th></th>
+    <th>주변 약국</th>
     <th>주변 약국 검색 결과</th>
   </tr>
   <tr>
-    <td></td>
+    <td><img src="docs/images/pharmacy.png" alt="주변 약국 화면: 지역·약국 이름 검색창과 카카오 지도" width="400"></td>
     <td><img src="docs/images/pharmacy-detail.png" alt="주변 약국 검색 결과 화면: 선택한 약국의 지도 위치와 주소·전화번호, 가까운 약국 3곳의 거리와 전화번호" width="400"></td>
   </tr>
 </table>
 
 <details>
-<summary>로그인, 회원가입, 내 복용 약, 마이페이지</summary>
+<summary>로그인, 회원가입, 마이페이지</summary>
 
 <table>
   <tr>
@@ -60,11 +60,9 @@
     <td><img src="docs/images/signup.png" alt="회원가입 화면: 이메일, 비밀번호, 비밀번호 확인, 닉네임 입력" width="400"></td>
   </tr>
   <tr>
-    <th>내 복용 약</th>
     <th>마이페이지</th>
   </tr>
   <tr>
-    <td><img src="docs/images/my-medicines.png" alt="내 복용 약 화면: 등록한 약 카드 5개와 복용 주기·시간, 삭제 버튼" width="400"></td>
     <td><img src="docs/images/mypage.png" alt="마이페이지 화면: 프로필과 프로필 수정, 다크 모드·알림 설정 토글, 회원 탈퇴" width="400"></td>
   </tr>
 </table>
