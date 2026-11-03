@@ -37,6 +37,14 @@
     <td><img src="docs/images/medicine-detail.png" alt="약 상세 화면: 약 정보와 복용 방법·주의사항 항목, 복용 주기·시작 날짜·복용 시간 수정 영역" width="400"></td>
     <td><img src="docs/images/pharmacy.png" alt="주변 약국 화면: 지역·약국 이름 검색창과 카카오 지도" width="400"></td>
   </tr>
+  <tr>
+    <th></th>
+    <th>주변 약국 검색 결과</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="docs/images/pharmacy-detail.png" alt="주변 약국 검색 결과 화면: 선택한 약국의 지도 위치와 주소·전화번호, 가까운 약국 3곳의 거리와 전화번호" width="400"></td>
+  </tr>
 </table>
 
 <details>
