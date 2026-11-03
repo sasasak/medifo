@@ -1,36 +1,214 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medifo
 
-## Getting Started
+복용 중인 약과 복용 시간을 등록하고, 날짜별 복용 여부를 기록·확인하는 복약 관리 웹 서비스
 
-First, run the development server:
+- 식약처 e약은요 OpenAPI로 수집한 의약품 정보 검색, 카카오맵 기반 주변 약국 찾기 포함
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 배포 주소
+
+- https://medifo-project.vercel.app (`main` 브랜치 배포)
+- 로그인하지 않은 상태로 접속하면 로그인 화면으로 이동함
+
+## 데모 계정
+
+<!-- 데모 계정 정보 추가 예정 -->
+
+## 화면
+
+<!-- 캡처 추가 예정 -->
+
+- 로그인 / 회원가입
+- 홈 (오늘 복용할 약, 이번 달 복용 현황 달력, 많이 복용하는 약 주의사항)
+- 홈 지난 날짜 복용 기록
+- 약 검색 (최근 검색어, 많이 찾는 약, 검색 결과)
+- 약 상세 및 복용 등록·수정
+- 내 복용 약
+- 주변 약국
+- 마이페이지
+- 다크 모드
+
+## 주요 기능
+
+### 회원
+
+- 이메일·비밀번호 회원가입, 로그인, 로그아웃 (Supabase Auth)
+- 입력값 검증은 Zod 스키마로 처리하고 필드별 오류 문구 표시
+- 로그인하지 않은 상태로 페이지에 들어가면 로그인 화면으로 이동하고, 로그인 후 원래 페이지로 돌아감
+- 마이페이지에서 닉네임 수정, 다크 모드 전환, 회원 탈퇴
+
+### 복용 관리
+
+- 약 상세 화면에서 복용 등록·수정
+  - 복용 주기: 매일 반복 / 특정 날짜 1회
+  - 시작 날짜: 오늘 기준 7일 전까지 선택 가능
+  - 복용 시간: 여러 개 추가 가능, 같은 시간 중복 추가 불가
+- 등록하면 날짜·시간별 복용 일정을 생성함 (매일 반복은 오늘부터 90일치, 시작일이 미래면 시작일부터 90일치)
+- 약 수정 시 이미 복용 완료로 체크한 날의 기록은 그대로 두고, 체크하지 않은 최근 7일과 오늘 이후 일정만 새 시간으로 바꿈
+- 내 복용 약 목록에서 복용 주기와 시간 확인, 상세 화면 이동, 삭제
+
+### 홈
+
+- 오늘 복용할 약 목록과 시간별 복용 완료 체크
+- 이번 달 복용 현황 달력
+  - 초록 점: 그날 일정을 모두 복용함 / 빨간 점: 복용하지 않은 일정이 있음
+  - 오늘은 예정 시각이 지난 일정만 기준으로 표시하고, 미래 날짜는 표시하지 않음
+- 지난 날짜를 누르면 그날의 복용 기록을 보여주고, 최근 7일 기록은 복용 여부 수정 가능
+- 많이 복용하는 약 주의사항 카드 4개 (등록한 사용자 수 기준 집계, 부족하면 기본 목록으로 채움)
+
+### 약 검색
+
+- 약 이름 부분 일치 검색, 전체 건수와 상위 50건 표시
+- 최근 검색어 5개 (개별 삭제, 전체 삭제)
+- 많이 찾는 약 키워드 8개 (검색한 사용자 수 기준 집계, 부족하면 기본 키워드로 채움)
+- 약 상세: 효능·효과, 복용 방법, 주의사항, 주의사항 경고, 상호작용, 부작용, 보관 방법 중 값이 있는 항목만 표시
+- 낱알 이미지가 없거나 불러오지 못하면 기본 아이콘 표시
+
+### 주변 약국
+
+- 첫 진입 시 현재 위치 기준으로 지도 표시 (위치 권한이 없으면 서울 기본 위치)
+- 약국 이름 자동완성 (방향키·Enter로 선택 가능)
+- 지역 검색: 주소 검색으로 지역 중심을 잡고, 결과가 5건 미만이면 반경을 1km → 3km → 5km로 넓혀 거리순으로 최대 15건 표시
+- 약국을 고르면 선택한 약국과 주변 약국 3곳 표시
+
+### 공통
+
+- 페이지 이동 중 화면 모양의 스켈레톤 표시
+- 라이트·다크 모드 (시스템 설정 기본)
+- 키보드 포커스 시 서비스 색에 맞춘 포커스링 표시
+
+## 기술 스택
+
+버전은 `package.json` 기준
+
+| 구분           | 사용 기술                                                            | 선택 이유                                                                                                            |
+| -------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 프레임워크     | Next.js 16.2.9 (App Router), React 19.2.4                            |                                                                                                                      |
+| 언어           | TypeScript ^5                                                        |                                                                                                                      |
+| 스타일         | Tailwind CSS ^4.3.1                                                  |                                                                                                                      |
+| 백엔드         | Supabase (`@supabase/supabase-js` ^2.108.2, `@supabase/ssr` ^0.12.0) |                                                                                                                      |
+| 인증 처리 위치 | Next.js `proxy.ts`                                                   | 페이지에 들어가기 전 한 곳에서 인증 여부를 확인하기 위함. Next.js 16에서 `middleware.ts` 대신 권장되는 이름 (PR #26) |
+| 입력값 검증    | Zod ^4.6.5                                                           | 정규식과 조건문으로 따로 작성하던 검증 규칙과 오류 문구를 스키마 한 곳에서 관리하기 위함 (PR #31)                    |
+| 테마           | next-themes ^0.4.6                                                   |                                                                                                                      |
+| 아이콘         | lucide-react ^1.21.0                                                 |                                                                                                                      |
+| 지도           | 카카오맵 JavaScript SDK (services 라이브러리)                        |                                                                                                                      |
+| 의약품 데이터  | 식약처 의약품개요정보(e약은요) OpenAPI                               |                                                                                                                      |
+| 코드 품질      | ESLint ^9 (`eslint-config-next` 16.2.9), Prettier ^3.8.4             |                                                                                                                      |
+| 패키지 매니저  | Bun (`bun.lock`)                                                     |                                                                                                                      |
+| 배포           | Vercel                                                               |                                                                                                                      |
+| 예약 작업      | GitHub Actions                                                       | Supabase 무료 플랜이 7일 동안 요청이 없으면 일시정지되는 것을 막기 위함 (PR #62)                                     |
+
+## 폴더 구조
+
+```
+src/
+├── app/
+│   ├── (auth)/          로그인, 회원가입, 로그아웃
+│   └── (main)/          로그인 후 화면 (홈, 약 검색, 약 상세, 내 복용 약, 주변 약국, 마이페이지)
+│       └── */_components/   화면 전용 컴포넌트
+├── components/
+│   ├── layout/          사이드바
+│   └── ui/              공용 컴포넌트 (모달, 입력창, 토스트, 약 이미지, 테마 전환)
+├── schemas/             Zod 스키마
+├── utils/
+│   ├── intakeLogs/      복용 일정 생성, 수정 가능 기간 계산
+│   └── supabase/        Supabase 클라이언트 (서버, 브라우저, 관리자, 세션 갱신)
+└── proxy.ts             인증 확인과 세션 갱신
+scripts/                 의약품 데이터 수집, 복용 일정 백필 (1회성)
+.github/workflows/       Supabase 일시정지 방지 예약 작업
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 데이터와 보안 구조
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 인증
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/proxy.ts`에서 정적 파일을 뺀 모든 요청마다 Supabase `getUser()`를 호출해 세션을 갱신함
+  - 로그인하지 않았으면 `/login?redirect=원래 경로`로 이동
+  - 로그인한 상태로 `/login`, `/signup`에 들어가면 `/home`으로 이동
+- 로그인 후 이동할 `redirect` 값은 내부 경로(`/`로 시작하고 `//`, `/\`로 시작하지 않는 값)일 때만 사용함
 
-## Learn More
+### Supabase 클라이언트
 
-To learn more about Next.js, take a look at the following resources:
+| 클라이언트 | 파일                       | 사용 위치                                                                |
+| ---------- | -------------------------- | ------------------------------------------------------------------------ |
+| 서버       | `utils/supabase/server.ts` | 서버 컴포넌트, 서버 액션 (쿠키 기반 로그인 사용자 권한)                  |
+| 브라우저   | `utils/supabase/client.ts` | 클라이언트 컴포넌트 (로그인 사용자 권한)                                 |
+| 관리자     | `utils/supabase/admin.ts`  | 서버 전용. 회원 탈퇴 시 `auth.users` 삭제, 집계 함수 호출, 수집 스크립트 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 관리자 클라이언트는 Secret key를 쓰고 RLS를 거치지 않으므로 서버 코드에서만 가져다 씀
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 테이블
 
-## Deploy on Vercel
+| 테이블                | 내용                                                    |
+| --------------------- | ------------------------------------------------------- |
+| `users`               | 회원 프로필 (닉네임)                                    |
+| `medicines`           | e약은요 수집 의약품 정보                                |
+| `user_medicines`      | 사용자가 등록한 복용 약 (복용 주기, 시작일, 시간)       |
+| `intake_logs`         | 날짜·시간별 복용 일정과 복용 여부 (`pending` / `taken`) |
+| `user_search_history` | 최근 검색어 (`user_id`, `term` 조합당 1행)              |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 테이블 정의, RLS 정책, DB 함수는 Supabase SQL Editor에서 직접 관리하고 저장소에는 마이그레이션 파일이 없음
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### RLS와 서버 검증
+
+- 공개 키로 로그인 없이 조회하면 `medicines`만 행이 조회되고 사용자 데이터 테이블은 0행이 조회됨 (PR #62에서 1회 확인)
+- 서버 액션마다 `getUser()`로 로그인 사용자를 다시 확인하고, 로그인하지 않았으면 처리하지 않음
+- 복용 여부 수정은 서버 액션에서 수정 가능 기간(오늘 기준 7일 전 ~ 오늘)을 다시 검사함
+- 홈의 날짜 쿼리(`?date=`)는 형식과 과거 날짜 여부를 서버에서 다시 검사함
+- 약 등록·수정·삭제, 최근 검색어 조회·삭제, 약 검색은 브라우저에서 Supabase로 직접 요청하므로 RLS에 의존함
+
+### 집계 함수 (RPC)
+
+- `get_popular_search_terms`: 검색한 사용자 수 기준 인기 검색어
+- `get_popular_medicines`: 등록한 사용자 수 기준 인기 약과 주의사항
+- 두 함수 모두 `security definer`, `search_path = ''`이고 `user_id`를 반환하지 않음 (PR #50)
+- 실행 권한은 `service_role`에만 있어 서버의 관리자 클라이언트로만 호출함
+- 사용자 3명 이상이 검색·등록한 항목만 집계함 (`src/utils/popularRanking.ts`의 `MIN_USERS`). 한 사람의 검색 기록이 다른 사용자에게 그대로 보이지 않게 하기 위함
+- 결과는 `unstable_cache`로 1시간 캐시하고, 호출이 실패하면 기본 목록만 보여주며 실패 결과는 캐시하지 않음
+
+## 실행 방법
+
+### 준비
+
+- Bun
+- Supabase 프로젝트 (위 테이블과 집계 함수가 있어야 함, 저장소에 스키마 파일 없음)
+- 카카오 개발자 JavaScript 키 (주변 약국)
+- 공공데이터포털 서비스 키 (의약품 데이터 수집 스크립트를 실행할 때만)
+
+### 환경변수
+
+프로젝트 루트에 `.env.local`을 만들고 아래 이름으로 값을 넣음 (`.env.example` 파일은 없음)
+
+| 이름                                   | 용도                            | 사용 위치                            |
+| -------------------------------------- | ------------------------------- | ------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 주소          | Supabase 클라이언트 전체             |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase 공개 키                | 서버, 브라우저 클라이언트, 세션 갱신 |
+| `SUPABASE_SECRET_KEY`                  | Supabase Secret key (서버 전용) | 관리자 클라이언트                    |
+| `NEXT_PUBLIC_KAKAO_MAP_KEY`            | 카카오맵 JavaScript 키          | 주변 약국 지도                       |
+| `DATA_GO_KR_SERVICE_KEY`               | 공공데이터포털 서비스 키        | `scripts/syncMedicines.ts`           |
+
+### 명령어
+
+```bash
+bun install
+bun dev            # http://localhost:3000
+bun run build
+bun run lint
+bun run format     # Prettier 검사 (format:fix로 수정)
+```
+
+### 의약품 데이터 수집 (1회성)
+
+스크립트 파일 주석에 적힌 실행 방법 (`tsx`는 `package.json`에 없어 `npx`로 실행)
+
+```bash
+# DB 쓰기 없이 소량 점검
+npx tsx --env-file=.env.local scripts/syncMedicines.ts --dry-run --rows=25 --pages=1
+# 전체 수집 (item_seq 기준 upsert라 다시 실행해도 됨)
+npx tsx --env-file=.env.local scripts/syncMedicines.ts
+```
+
+### GitHub Actions 시크릿
+
+`.github/workflows/supabase-keepalive.yml`(3일마다 실행)에 필요함
+
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_PING_TABLE`
