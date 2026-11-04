@@ -1,5 +1,6 @@
 'use client';
 
+import StopMedicineButton from '@/components/medicine/StopMedicineButton';
 import Modal from '@/components/ui/Modal';
 import Toast from '@/components/ui/Toast';
 import { createClient } from '@/utils/supabase/client';
@@ -7,7 +8,6 @@ import { CircleStop, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState, useTransition } from 'react';
-import { stopUserMedicineAction } from '../stopUserMedicineAction';
 
 interface UserMedicineCardProps {
   id: string;
@@ -18,8 +18,6 @@ interface UserMedicineCardProps {
   dosage?: string;
 }
 
-type ConfirmTarget = 'stop' | 'delete' | null;
-
 export default function UserMedicineCard({
   id,
   medicineId,
@@ -29,23 +27,12 @@ export default function UserMedicineCard({
   dosage,
 }: UserMedicineCardProps) {
   const router = useRouter();
-  const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
 
   // Toast의 effect 의존성에 들어가므로 렌더마다 새로 만들지 않음
   const handleToastClose = useCallback(() => setErrorMessage(''), []);
-
-  const handleStop = () => {
-    setErrorMessage('');
-    startTransition(async () => {
-      const result = await stopUserMedicineAction(id);
-      setConfirmTarget(null);
-      if (result.error) {
-        setErrorMessage(result.error);
-      }
-    });
-  };
 
   const handleDelete = () => {
     setErrorMessage('');
@@ -56,7 +43,7 @@ export default function UserMedicineCard({
         .delete()
         .eq('id', id);
 
-      setConfirmTarget(null);
+      setIsDeleteOpen(false);
       if (error) {
         setErrorMessage('삭제에 실패했습니다. 다시 시도해주세요.');
         return;
@@ -77,21 +64,19 @@ export default function UserMedicineCard({
         <div className="flex items-center justify-between">
           <span className="font-bold">{name}</span>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label={`${name} 복용 종료`}
-              title="복용 종료"
+            <StopMedicineButton
+              userMedicineId={id}
+              ariaLabel={`${name} 복용 종료`}
               className="text-text-muted hover:text-accent-400 relative cursor-pointer"
-              onClick={() => setConfirmTarget('stop')}
             >
               <CircleStop size={16} />
-            </button>
+            </StopMedicineButton>
             <button
               type="button"
               aria-label={`${name} 삭제`}
               title="삭제"
               className="text-text-muted hover:text-danger-400 relative cursor-pointer"
-              onClick={() => setConfirmTarget('delete')}
+              onClick={() => setIsDeleteOpen(true)}
             >
               <Trash2 size={16} />
             </button>
@@ -111,18 +96,8 @@ export default function UserMedicineCard({
       </div>
 
       <Modal
-        isOpen={confirmTarget === 'stop'}
-        onClose={() => setConfirmTarget(null)}
-        title="복용을 종료할까요?"
-        description="오늘 남은 일정과 앞으로의 일정이 사라지고, 지난 복용 기록은 달력에 그대로 남습니다. 다시 복용하려면 약을 새로 등록해 주세요."
-        confirmLabel={isPending ? '처리 중...' : '복용 종료'}
-        cancelLabel="취소"
-        onConfirm={handleStop}
-        isConfirmDisabled={isPending}
-      />
-      <Modal
-        isOpen={confirmTarget === 'delete'}
-        onClose={() => setConfirmTarget(null)}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
         title="약을 삭제할까요?"
         description="삭제하면 이 약의 지난 복용 기록도 모두 함께 삭제되며 복구할 수 없습니다. 기록을 남기려면 '복용 종료'를 이용해 주세요."
         confirmLabel={isPending ? '처리 중...' : '삭제하기'}
