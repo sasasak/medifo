@@ -84,7 +84,7 @@ export default function UserMedicineCard({
           <button
             type="button"
             aria-label={`${name} 삭제`}
-            className="text-danger-text relative cursor-pointer p-1 text-xs hover:underline"
+            className="text-danger-text relative min-h-6 cursor-pointer p-1 text-xs hover:underline"
             onClick={() => setIsDeleteOpen(true)}
           >
             삭제
