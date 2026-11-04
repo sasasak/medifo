@@ -40,7 +40,7 @@ export default async function MyMedicinesPage() {
         </Link>
       </div>
       {medicines && medicines.length > 0 ? (
-        <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {medicines?.map((medicine) => (
             <UserMedicineCard
               key={medicine.id}

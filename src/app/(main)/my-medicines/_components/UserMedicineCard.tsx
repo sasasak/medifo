@@ -4,7 +4,6 @@ import StopMedicineButton from '@/components/medicine/StopMedicineButton';
 import Modal from '@/components/ui/Modal';
 import Toast from '@/components/ui/Toast';
 import { createClient } from '@/utils/supabase/client';
-import { CircleStop, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState, useTransition } from 'react';
@@ -61,27 +60,7 @@ export default function UserMedicineCard({
           aria-label={`${name} 상세 보기`}
           className="absolute inset-0 rounded-2xl"
         />
-        <div className="flex items-center justify-between">
-          <span className="font-bold">{name}</span>
-          <div className="flex items-center gap-3">
-            <StopMedicineButton
-              userMedicineId={id}
-              ariaLabel={`${name} 복용 종료`}
-              className="text-text-muted hover:text-accent-400 relative cursor-pointer"
-            >
-              <CircleStop size={16} />
-            </StopMedicineButton>
-            <button
-              type="button"
-              aria-label={`${name} 삭제`}
-              title="삭제"
-              className="text-text-muted hover:text-danger-400 relative cursor-pointer"
-              onClick={() => setIsDeleteOpen(true)}
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        </div>
+        <span className="font-bold">{name}</span>
         <div className="text-text-muted mt-2 flex items-center gap-2 text-sm">
           {dosage && (
             <>
@@ -92,6 +71,24 @@ export default function UserMedicineCard({
           <span>{frequency}</span>
           <span>|</span>
           <span>{times?.join(', ')}</span>
+        </div>
+        {/* 제목이 카드 폭을 다 쓰도록 버튼은 아래 줄에 둠. 링크 위에 올리려고 relative 사용 */}
+        <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+          <StopMedicineButton
+            userMedicineId={id}
+            ariaLabel={`${name} 복용 종료`}
+            className="border-border-light text-text-base hover:border-button relative cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors"
+          >
+            복용 종료
+          </StopMedicineButton>
+          <button
+            type="button"
+            aria-label={`${name} 삭제`}
+            className="text-danger-text relative cursor-pointer p-1 text-xs hover:underline"
+            onClick={() => setIsDeleteOpen(true)}
+          >
+            삭제
+          </button>
         </div>
       </div>
 
