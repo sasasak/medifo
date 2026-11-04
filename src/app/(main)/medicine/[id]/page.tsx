@@ -27,13 +27,15 @@ export default async function MedicineDetailPage({
 
   if (!medicine) notFound();
 
+  // 복용 종료한 행은 불러오지 않아 신규 등록 화면으로 열림 (다시 복용하면 새 행으로 등록)
   const { data: existingMedicine } = await supabase
     .from('user_medicines')
     .select('id, times, frequency, repeat_type, start_date')
     .eq('user_id', user?.id)
     .eq('medicine_id', id)
+    .eq('is_active', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   return (
     <section className="p-6">
