@@ -73,11 +73,12 @@ export default function UserMedicineCard({
           <span>{times?.join(', ')}</span>
         </div>
         {/* 제목이 카드 폭을 다 쓰도록 버튼은 아래 줄에 둠. 링크 위에 올리려고 relative 사용 */}
+        {/* 다크에서 border-light와 card-muted가 같은 색이라, 카드에 마우스를 올리면 종료 버튼 테두리를 border-focus로 바꿈 */}
         <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
           <StopMedicineButton
             userMedicineId={id}
             ariaLabel={`${name} 복용 종료`}
-            className="border-border-light text-text-base hover:border-button relative min-h-8 cursor-pointer rounded-full border px-4 py-1.5 text-sm transition-colors"
+            className="border-border-light text-text-base hover:border-button [.dark_&]:group-hover:border-border-focus relative min-h-8 cursor-pointer rounded-full border px-4 py-1.5 text-sm transition-colors"
           >
             복용 종료
           </StopMedicineButton>
