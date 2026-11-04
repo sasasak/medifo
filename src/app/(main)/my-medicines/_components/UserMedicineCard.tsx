@@ -53,7 +53,7 @@ export default function UserMedicineCard({
 
   return (
     <>
-      <div className="bg-card border-border-light hover:bg-card-muted relative cursor-pointer rounded-2xl border p-4 transition-colors">
+      <div className="group bg-card border-border-light hover:bg-card-muted relative cursor-pointer rounded-2xl border p-4 transition-colors">
         {/* 카드 전체를 덮는 링크. 종료·삭제 버튼을 링크 안에 넣지 않으려고 겹쳐 둠 */}
         <Link
           href={`/medicine/${medicineId}`}
@@ -84,7 +84,7 @@ export default function UserMedicineCard({
           <button
             type="button"
             aria-label={`${name} 삭제`}
-            className="text-danger-text relative min-h-8 cursor-pointer px-2 py-1.5 text-sm hover:underline"
+            className="text-danger-text group-hover:text-danger-text-hover relative min-h-8 cursor-pointer px-2 py-1.5 text-sm hover:underline"
             onClick={() => setIsDeleteOpen(true)}
           >
             삭제

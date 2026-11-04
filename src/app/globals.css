@@ -68,6 +68,7 @@
   --color-border-light: var(--color-border-light);
   --color-danger-border: var(--color-danger-border);
   --color-danger-text: var(--color-danger-text);
+  --color-danger-text-hover: var(--color-danger-text-hover);
   --color-focus-ring: var(--color-focus-ring);
 }
 
@@ -89,8 +90,9 @@
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
   --color-danger-border: #e24b4a;
-  /* 작은 경고 글자: 카드와 card-muted 위 모두 대비 4.5 이상 */
-  --color-danger-text: #791f1f;
+  /* 작은 경고 글자: 카드와 card-muted 위 모두 대비 4.5 이상 (팔레트 800은 갈색으로 보여 더 빨간 색 사용) */
+  --color-danger-text: #b91c1c;
+  --color-danger-text-hover: #b91c1c;
   --color-focus-ring: #534ab7;
 }
 /* ─── 다크 모드 ────────────────────────────────────────── */
@@ -114,7 +116,9 @@
   --color-sidebar-text: #a5f3d9;
   --color-sidebar: #085041;
   --color-danger-border: #0f6e56;
-  --color-danger-text: #fcebeb;
+  /* danger-200은 card-muted 위에서 4.5 미달이라 카드에 마우스를 올리면 danger-50으로 바꿈 */
+  --color-danger-text: #f7c1c1;
+  --color-danger-text-hover: #fcebeb;
   --color-focus-ring: #cecbf6;
 }
 
