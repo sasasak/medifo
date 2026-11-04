@@ -77,14 +77,14 @@ export default function UserMedicineCard({
           <StopMedicineButton
             userMedicineId={id}
             ariaLabel={`${name} 복용 종료`}
-            className="border-border-light text-text-base hover:border-button relative cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors"
+            className="border-border-light text-text-base hover:border-button relative min-h-8 cursor-pointer rounded-full border px-4 py-1.5 text-sm transition-colors"
           >
             복용 종료
           </StopMedicineButton>
           <button
             type="button"
             aria-label={`${name} 삭제`}
-            className="text-danger-text relative min-h-6 cursor-pointer p-1 text-xs hover:underline"
+            className="text-danger-text relative min-h-8 cursor-pointer px-2 py-1.5 text-sm hover:underline"
             onClick={() => setIsDeleteOpen(true)}
           >
             삭제
