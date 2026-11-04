@@ -5,6 +5,7 @@ import { Info, Plus } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
+import StopMedicineButton from '@/components/medicine/StopMedicineButton';
 import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
 import {
   createMedicineRegisterSchema,
@@ -235,6 +236,16 @@ export default function MedicineRegister({
             ? '+ 복용 시간 수정'
             : '+ 복용 약에 추가'}
       </button>
+      {existingData && (
+        <StopMedicineButton
+          userMedicineId={existingData.id}
+          className="border-border-light text-text-base hover:bg-card-muted mt-3 w-full cursor-pointer rounded-full border py-4 font-bold transition-colors"
+          // 뒤로 가기로 종료 전 수정 화면에 돌아오지 않도록 replace 사용
+          onStopped={() => router.replace('/my-medicines')}
+        >
+          복용 종료
+        </StopMedicineButton>
+      )}
     </div>
   );
 }
