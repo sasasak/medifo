@@ -158,7 +158,8 @@ src/
 │   ├── intakeLogs/      복용 일정 생성, 수정 가능 기간 계산
 │   └── supabase/        Supabase 클라이언트 (서버, 브라우저, 관리자, 세션 갱신)
 └── proxy.ts             인증 확인과 세션 갱신
-scripts/                 의약품 데이터 수집, 복용 일정 백필 (1회성)
+scripts/                 의약품·DUR 병용금기 데이터 수집, 복용 일정 백필 (1회성)
+docs/schema.sql          SQL Editor에서 직접 실행한 테이블 구조 기록 (DUR 병용금기 테이블부터)
 .github/workflows/       Supabase 일시정지 방지 예약 작업
 ```
 
@@ -360,13 +361,13 @@ scripts/                 의약품 데이터 수집, 복용 일정 백필 (1회�
 
 프로젝트 루트에 `.env.local`을 만들고 아래 이름으로 값을 넣음 (`.env.example` 파일은 없음)
 
-| 이름                                   | 용도                            | 사용 위치                            |
-| -------------------------------------- | ------------------------------- | ------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 주소          | Supabase 클라이언트 전체             |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase 공개 키                | 서버, 브라우저 클라이언트, 세션 갱신 |
-| `SUPABASE_SECRET_KEY`                  | Supabase Secret key (서버 전용) | 관리자 클라이언트                    |
-| `NEXT_PUBLIC_KAKAO_MAP_KEY`            | 카카오맵 JavaScript 키          | 주변 약국 지도                       |
-| `DATA_GO_KR_SERVICE_KEY`               | 공공데이터포털 서비스 키        | `scripts/syncMedicines.ts`           |
+| 이름                                   | 용도                            | 사용 위치                                                         |
+| -------------------------------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 주소          | Supabase 클라이언트 전체                                          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase 공개 키                | 서버, 브라우저 클라이언트, 세션 갱신                              |
+| `SUPABASE_SECRET_KEY`                  | Supabase Secret key (서버 전용) | 관리자 클라이언트                                                 |
+| `NEXT_PUBLIC_KAKAO_MAP_KEY`            | 카카오맵 JavaScript 키          | 주변 약국 지도                                                    |
+| `DATA_GO_KR_SERVICE_KEY`               | 공공데이터포털 서비스 키        | `scripts/syncMedicines.ts`, `scripts/syncDurContraindications.ts` |
 
 ### 명령어
 
@@ -387,6 +388,19 @@ bun run format     # Prettier 검사 (format:fix로 수정)
 npx tsx --env-file=.env.local scripts/syncMedicines.ts --dry-run --rows=25 --pages=1
 # 전체 수집 (item_seq 기준 upsert라 다시 실행해도 됨)
 npx tsx --env-file=.env.local scripts/syncMedicines.ts
+```
+
+식약처 DUR 병용금기 성분 데이터 (`dur_ingredients`, `dur_contraindication_rules`, `medicine_ingredients`)
+
+- 공공데이터포털에서 "의약품안전사용서비스(DUR)품목정보" 활용신청이 따로 필요함
+- 전체 수집은 1,583페이지, 약 75분 걸리고 호출 약 1,585회를 씀 (응답 헤더 기준 하루 10,000회로 추정)
+- 진행 파일과 집계 캐시는 OS 임시 폴더(`medifo-dur-sync`)에만 저장하고, 멈추면 같은 명령으로 이어서 받음
+
+```bash
+# 전체 수집 + 검증만 (DB 쓰기 없음, 집계 캐시 저장)
+npx tsx --env-file=.env.local scripts/syncDurContraindications.ts --dry-run
+# 다시 받지 않고 캐시로 저장 (검증을 모두 통과해야 저장, 이번 실행 시각보다 오래된 행은 정리)
+npx tsx --env-file=.env.local scripts/syncDurContraindications.ts --from-cache
 ```
 
 ### GitHub Actions 시크릿
