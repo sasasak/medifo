@@ -1,10 +1,13 @@
-# Supabase 무료 플랜은 7일 동안 요청이 없으면 프로젝트가 일시정지되므로 주기적으로 조회 요청을 보냄
+# Supabase 무료 플랜은 7일 동안 DB 활동이 적으면 프로젝트를 일시정지함
+# 공식 문서 기준 "하루에 몇 번의 DB 요청"이 필요해 하루 2회, 실행마다 쓰기(heartbeat) 1건 + 조회 1건을 보냄
+# 예약 실행은 기본 브랜치(dev)에서만 돌고, 정지되면 요청이 실패해 실행이 실패로 처리되고 GitHub 알림이 감
 name: Supabase keepalive
 
 on:
   schedule:
-    # 3일마다 00:00 UTC (한국 시간 09:00)
-    - cron: '0 0 */3 * *'
+    # 매일 21:17, 09:17 UTC (한국 시간 06:17, 18:17). 정각은 GitHub 부하가 몰려 늦어지므로 피함
+    - cron: '17 21 * * *'
+    - cron: '17 9 * * *'
   workflow_dispatch:
 
 permissions:
@@ -14,20 +17,58 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_PING_TABLE: ${{ secrets.SUPABASE_PING_TABLE }}
     steps:
-      - name: Supabase REST API 조회
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_PING_TABLE: ${{ secrets.SUPABASE_PING_TABLE }}
+      - name: 시크릿 확인
         run: |
+          set -euo pipefail
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ] || [ -z "$SUPABASE_PING_TABLE" ]; then
             echo "SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_PING_TABLE 시크릿이 모두 등록되어 있어야 함"
             exit 1
           fi
-          status=$(curl --fail --silent --show-error --max-time 30 \
+
+      # keepalive_ping(): keepalive_heartbeat 1행의 시각만 갱신 (1분에 1번까지만 쓰기, anon만 실행 가능, docs/schema.sql)
+      - name: heartbeat 쓰기 (rpc keepalive_ping)
+        run: |
+          set -euo pipefail
+          response=$(curl --fail --silent --show-error \
+            --retry 3 --retry-all-errors --retry-delay 10 --max-time 30 \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/keepalive_ping" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "응답: $response"
+
+          updated=$(echo "$response" | jq -r '.updated')
+          last_ping_at=$(echo "$response" | jq -r '.last_ping_at')
+          ping_count=$(echo "$response" | jq -r '.ping_count')
+          age=$(( $(date -u +%s) - $(date -u -d "$last_ping_at" +%s) ))
+
+          {
+            echo "### heartbeat"
+            echo "- updated: $updated"
+            echo "- ping_count: $ping_count"
+            echo "- last_ping_at: $last_ping_at (${age}초 전)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # 쓰기가 실제로 반영됐는지 확인: 10분 이내가 아니면 실패
+          if [ "$age" -gt 600 ] || [ "$age" -lt -60 ]; then
+            echo "last_ping_at이 10분 이내가 아님 (${age}초)"
+            exit 1
+          fi
+
+      - name: Supabase REST API 조회
+        run: |
+          set -euo pipefail
+          status=$(curl --fail --silent --show-error \
+            --retry 3 --retry-all-errors --retry-delay 10 --max-time 30 \
             --output /dev/null --write-out '%{http_code}' \
             "$SUPABASE_URL/rest/v1/$SUPABASE_PING_TABLE?select=id&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY")
           echo "응답 코드: $status"
+          echo "- 조회 응답 코드: $status" >> "$GITHUB_STEP_SUMMARY"

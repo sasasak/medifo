@@ -124,22 +124,22 @@
 
 버전은 `package.json` 기준
 
-| 구분           | 사용 기술                                                            | 선택 이유                                                                                                            |
-| -------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 프레임워크     | Next.js 16.2.9 (App Router), React 19.2.4                            |                                                                                                                      |
-| 언어           | TypeScript ^5                                                        |                                                                                                                      |
-| 스타일         | Tailwind CSS ^4.3.1                                                  |                                                                                                                      |
-| 백엔드         | Supabase (`@supabase/supabase-js` ^2.108.2, `@supabase/ssr` ^0.12.0) |                                                                                                                      |
-| 인증 처리 위치 | Next.js `proxy.ts`                                                   | 페이지에 들어가기 전 한 곳에서 인증 여부를 확인하기 위함. Next.js 16에서 `middleware.ts` 대신 권장되는 이름 (PR #26) |
-| 입력값 검증    | Zod ^4.6.5                                                           | 정규식과 조건문으로 따로 작성하던 검증 규칙과 오류 문구를 스키마 한 곳에서 관리하기 위함 (PR #31)                    |
-| 테마           | next-themes ^0.4.6                                                   |                                                                                                                      |
-| 아이콘         | lucide-react ^1.21.0                                                 |                                                                                                                      |
-| 지도           | 카카오맵 JavaScript SDK (services 라이브러리)                        |                                                                                                                      |
-| 의약품 데이터  | 식약처 의약품개요정보(e약은요) OpenAPI                               |                                                                                                                      |
-| 코드 품질      | ESLint ^9 (`eslint-config-next` 16.2.9), Prettier ^3.8.4             |                                                                                                                      |
-| 패키지 매니저  | Bun (`bun.lock`)                                                     |                                                                                                                      |
-| 배포           | Vercel                                                               |                                                                                                                      |
-| 예약 작업      | GitHub Actions                                                       | Supabase 무료 플랜이 7일 동안 요청이 없으면 일시정지되는 것을 막기 위함 (PR #62)                                     |
+| 구분           | 사용 기술                                                            | 선택 이유                                                                                                                |
+| -------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 프레임워크     | Next.js 16.2.9 (App Router), React 19.2.4                            |                                                                                                                          |
+| 언어           | TypeScript ^5                                                        |                                                                                                                          |
+| 스타일         | Tailwind CSS ^4.3.1                                                  |                                                                                                                          |
+| 백엔드         | Supabase (`@supabase/supabase-js` ^2.108.2, `@supabase/ssr` ^0.12.0) |                                                                                                                          |
+| 인증 처리 위치 | Next.js `proxy.ts`                                                   | 페이지에 들어가기 전 한 곳에서 인증 여부를 확인하기 위함. Next.js 16에서 `middleware.ts` 대신 권장되는 이름 (PR #26)     |
+| 입력값 검증    | Zod ^4.6.5                                                           | 정규식과 조건문으로 따로 작성하던 검증 규칙과 오류 문구를 스키마 한 곳에서 관리하기 위함 (PR #31)                        |
+| 테마           | next-themes ^0.4.6                                                   |                                                                                                                          |
+| 아이콘         | lucide-react ^1.21.0                                                 |                                                                                                                          |
+| 지도           | 카카오맵 JavaScript SDK (services 라이브러리)                        |                                                                                                                          |
+| 의약품 데이터  | 식약처 의약품개요정보(e약은요) OpenAPI                               |                                                                                                                          |
+| 코드 품질      | ESLint ^9 (`eslint-config-next` 16.2.9), Prettier ^3.8.4             |                                                                                                                          |
+| 패키지 매니저  | Bun (`bun.lock`)                                                     |                                                                                                                          |
+| 배포           | Vercel                                                               |                                                                                                                          |
+| 예약 작업      | GitHub Actions                                                       | Supabase 무료 플랜이 7일 동안 DB 활동이 적으면 일시정지되는 것을 막기 위함. 하루 2회 heartbeat 쓰기 + 조회 (PR #62, #70) |
 
 ## 폴더 구조
 
@@ -405,6 +405,8 @@ npx tsx --env-file=.env.local scripts/syncDurContraindications.ts --from-cache
 
 ### GitHub Actions 시크릿
 
-`.github/workflows/supabase-keepalive.yml`(3일마다 실행)에 필요함
+`.github/workflows/supabase-keepalive.yml`(하루 2회 실행, 06:17·18:17 KST 예약)에 필요함. service_role 키는 쓰지 않음
 
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_PING_TABLE`
+
+실행마다 `rpc/keepalive_ping`(heartbeat 1행 갱신, anon만 실행 가능)과 테이블 조회 1건을 보냄. 테이블과 함수 SQL은 `docs/schema.sql`
