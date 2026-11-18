@@ -41,3 +41,49 @@ alter table public.dur_contraindication_rules enable row level security;
 create policy "DUR 성분 전체 읽기 허용" on public.dur_ingredients for select to public using (true);
 create policy "약 성분 연결 전체 읽기 허용" on public.medicine_ingredients for select to public using (true);
 create policy "DUR 병용금기 조합 전체 읽기 허용" on public.dur_contraindication_rules for select to public using (true);
+
+-- ============================================================
+-- #70 Supabase 일시정지 방지 heartbeat (2026-11 적용)
+-- 호출: .github/workflows/supabase-keepalive.yml (하루 2회, anon 키로 rpc 호출)
+-- ============================================================
+
+-- 1) 테이블: 1행만 허용
+create table public.keepalive_heartbeat (
+  id           smallint primary key default 1 check (id = 1),
+  last_ping_at timestamptz not null default now(),
+  ping_count   bigint not null default 0
+);
+insert into public.keepalive_heartbeat (id) values (1);
+
+-- 2) 직접 접근 차단: RLS를 켜고 정책은 만들지 않음, 권한도 회수
+alter table public.keepalive_heartbeat enable row level security;
+revoke all on public.keepalive_heartbeat from anon, authenticated;
+
+-- 3) 함수: 인자 없음, 그 1행의 시각만 갱신, 1분에 1번까지만 쓰기
+create or replace function public.keepalive_ping()
+returns json
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_updated boolean;
+  v_at timestamptz;
+  v_count bigint;
+begin
+  update public.keepalive_heartbeat
+     set last_ping_at = now(), ping_count = ping_count + 1
+   where id = 1
+     and last_ping_at < now() - interval '1 minute';
+  v_updated := found;
+
+  select last_ping_at, ping_count into v_at, v_count
+    from public.keepalive_heartbeat where id = 1;
+
+  return json_build_object('updated', v_updated, 'last_ping_at', v_at, 'ping_count', v_count);
+end;
+$$;
+
+-- 4) 실행 권한은 anon에만 (public 스키마 함수는 anon, authenticated, service_role에 자동으로 권한이 붙으므로 회수)
+revoke execute on function public.keepalive_ping() from public, anon, authenticated, service_role;
+grant execute on function public.keepalive_ping() to anon;
