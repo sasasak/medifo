@@ -15,6 +15,7 @@ const TITLE_ID = 'dur-contraindication-title';
 const TITLE = 'DUR 병용금기 성분 정보';
 const EMPTY_REASON = '사유 정보 없음(DUR 원문 기준)';
 
+// 카드 안 한글은 낱말 단위로 줄바꿈하고(break-keep), 칸보다 긴 성분명만 글자 단위로 나눠 넘치지 않게 한다(wrap-anywhere)
 // 카드 안 글자는 대비 4.5 이상을 위해 text-muted(라이트 4.18) 대신 text-base를 쓰고 크기로 위계를 나눈다
 // baseMonth를 넘기지 않으면(조회 실패) 출처 줄을 그리지 않는다
 function Notices({ baseMonth }: { baseMonth?: string | null }) {
@@ -96,7 +97,7 @@ function NeutralCard({ children }: { children: ReactNode }) {
   return (
     <section
       aria-labelledby={TITLE_ID}
-      className="bg-card border-border-light mt-4 flex flex-col gap-3 rounded-2xl border p-6"
+      className="bg-card border-border-light mt-4 flex flex-col gap-3 rounded-2xl border p-6 wrap-anywhere break-keep"
     >
       <h2 id={TITLE_ID} className="text-text-base font-bold">
         {TITLE}
@@ -142,7 +143,7 @@ export default function ContraindicationAlert({
     // 다크 모드의 danger-border는 일반 카드 테두리와 같은 색이라 이 카드만 danger-200을 쓴다
     <section
       aria-labelledby={TITLE_ID}
-      className="bg-card border-danger-border [.dark_&]:border-danger-200 mt-4 rounded-2xl border p-6"
+      className="bg-card border-danger-border [.dark_&]:border-danger-200 mt-4 rounded-2xl border p-6 wrap-anywhere break-keep"
     >
       <div className="flex items-start gap-2">
         <AlertTriangle
