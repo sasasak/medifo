@@ -136,14 +136,21 @@ export default function ContraindicationAlert({
   if (withPartners.length === 0) {
     return (
       <NeutralCard>
-        {/* 상호작용 항목이 없는 약은 화면에 없는 항목을 가리키지 않도록 가운데 문장을 뺀다 */}
-        <p className="text-text-base text-sm">
-          식약처 DUR 병용금기 지정 목록에서 이 약과 연결된 성분 조합이 확인되지
-          않았습니다.
-          {hasInteractions &&
-            " 약 설명서의 '상호작용'에는 이 목록과 별개로 함께 복용할 때 주의할 약이 적혀 있을 수 있습니다."}{' '}
-          목록에 없다는 것이 함께 복용해도 된다는 뜻은 아닙니다
-        </p>
+        {/* 읽기 쉽도록 문장마다 줄을 나눈다 */}
+        <div className="text-text-base flex flex-col gap-1 text-sm">
+          <p>
+            식약처 DUR 병용금기 지정 목록에서 이 약과 연결된 성분 조합이
+            확인되지 않았습니다.
+          </p>
+          {/* 상호작용 항목이 없는 약은 화면에 없는 항목을 가리키지 않도록 이 문장을 뺀다 */}
+          {hasInteractions && (
+            <p>
+              약 설명서의 &apos;상호작용&apos;에는 이 목록과 별개로 함께 복용할
+              때 주의할 약이 적혀 있을 수 있습니다.
+            </p>
+          )}
+          <p>목록에 없다는 것이 함께 복용해도 된다는 뜻은 아닙니다</p>
+        </div>
         <Notices baseMonth={info.baseMonth} />
       </NeutralCard>
     );
