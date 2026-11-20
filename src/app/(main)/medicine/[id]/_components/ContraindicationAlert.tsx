@@ -16,9 +16,8 @@ const VISIBLE_PARTNER_COUNT = 5;
 const TITLE_ID = 'dur-contraindication-title';
 const TITLE = 'DUR 병용금기 성분 정보';
 const EMPTY_REASON = '사유 정보 없음(DUR 원문 기준)';
-// 이 카드가 보여주는 범위. 약 설명서의 상호작용과 다른 목록임을 알리려고 모든 상태에서 제목 바로 아래에 둔다
-const SCOPE_NOTE =
-  "식약처가 병용금기로 공식 지정한 성분 조합만 보여 줍니다. 약 설명서의 '상호작용'에는 이 목록에 없는 주의사항이 적혀 있을 수 있습니다";
+// 문장 묶음. 읽기 쉽도록 한 문장씩 줄을 나누고, 문장 사이에는 따로 간격을 두지 않는다(본문 줄 간격과 같음)
+const SENTENCES_CLASS = 'text-text-base flex flex-col text-sm';
 
 // 카드 안 한글은 낱말 단위로 줄바꿈하고(break-keep), 칸보다 긴 성분명만 글자 단위로 나눠 넘치지 않게 한다(wrap-anywhere)
 // 카드 안 글자는 대비 4.5 이상을 위해 text-muted(라이트 4.18) 대신 text-base를 쓰고 크기로 위계를 나눈다
@@ -26,7 +25,7 @@ const SCOPE_NOTE =
 function Notices({ baseMonth }: { baseMonth?: string | null }) {
   return (
     <>
-      <div className="text-text-base flex flex-col gap-1 text-sm">
+      <div className={SENTENCES_CLASS}>
         <p>
           이 정보는 식약처 공개 데이터를 참고용으로 보여주며 의사·약사의
           진단이나 처방을 대신하지 않습니다
@@ -40,6 +39,22 @@ function Notices({ baseMonth }: { baseMonth?: string | null }) {
         </p>
       )}
     </>
+  );
+}
+
+// 이 카드가 보여주는 범위. 조회에 성공한 카드에서 제목 바로 아래에 둔다
+// 뒷문장은 아코디언에 '상호작용' 항목이 보일 때만 넣어 화면에 없는 항목을 가리키지 않게 한다
+function ScopeNote({ hasInteractions }: { hasInteractions: boolean }) {
+  return (
+    <div className={SENTENCES_CLASS}>
+      <p>식약처가 병용금기로 공식 지정한 성분 조합만 보여 줍니다.</p>
+      {hasInteractions && (
+        <p>
+          약 설명서의 &apos;상호작용&apos; 항목에는 이 목록에 없는 주의사항이
+          적혀 있을 수 있습니다.
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -107,7 +122,6 @@ function NeutralCard({ children }: { children: ReactNode }) {
       <h2 id={TITLE_ID} className="text-text-base font-bold">
         {TITLE}
       </h2>
-      <p className="text-text-base text-sm">{SCOPE_NOTE}</p>
       {children}
     </section>
   );
@@ -118,12 +132,14 @@ export default function ContraindicationAlert({
   hasInteractions,
 }: ContraindicationAlertProps) {
   // 조회 실패는 "조합 없음"과 구분한다 (목록에 없는 것처럼 읽히지 않게)
+  // 무엇을 보여주는 카드인지 알 수 없는 상태라 범위 문장도 넣지 않는다
   if (info.status === 'error') {
     return (
       <NeutralCard>
-        <p className="text-text-base text-sm">
-          병용금기 성분 정보를 불러오지 못했습니다. 잠시 뒤 다시 확인해 주세요
-        </p>
+        <div className={SENTENCES_CLASS}>
+          <p>병용금기 성분 정보를 불러오지 못했습니다.</p>
+          <p>잠시 뒤 다시 확인해 주세요</p>
+        </div>
         <Notices />
       </NeutralCard>
     );
@@ -136,20 +152,13 @@ export default function ContraindicationAlert({
   if (withPartners.length === 0) {
     return (
       <NeutralCard>
-        {/* 읽기 쉽도록 문장마다 줄을 나눈다 */}
-        <div className="text-text-base flex flex-col gap-1 text-sm">
+        <ScopeNote hasInteractions={hasInteractions} />
+        <div className={SENTENCES_CLASS}>
           <p>
             식약처 DUR 병용금기 지정 목록에서 이 약과 연결된 성분 조합이
             확인되지 않았습니다.
           </p>
-          {/* 상호작용 항목이 없는 약은 화면에 없는 항목을 가리키지 않도록 이 문장을 뺀다 */}
-          {hasInteractions && (
-            <p>
-              약 설명서의 &apos;상호작용&apos;에는 이 목록과 별개로 함께 복용할
-              때 주의할 약이 적혀 있을 수 있습니다.
-            </p>
-          )}
-          <p>목록에 없다는 것이 함께 복용해도 된다는 뜻은 아닙니다</p>
+          <p>목록에 없다는 것이 함께 복용해도 된다는 뜻은 아닙니다.</p>
         </div>
         <Notices baseMonth={info.baseMonth} />
       </NeutralCard>
@@ -172,7 +181,7 @@ export default function ContraindicationAlert({
           <h2 id={TITLE_ID} className="text-danger-text font-bold">
             {TITLE}
           </h2>
-          <p className="text-text-base text-sm">{SCOPE_NOTE}</p>
+          <ScopeNote hasInteractions={hasInteractions} />
           {withPartners.map((ingredient) => (
             <div key={ingredient.code} className="flex flex-col gap-2">
               <p className="text-text-base text-sm">
