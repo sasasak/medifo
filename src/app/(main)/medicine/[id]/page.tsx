@@ -47,7 +47,10 @@ export default async function MedicineDetailPage({
         efficacy={medicine.efficacy}
         imageUrl={medicine.image_url}
       />
-      <ContraindicationAlert info={contraindicationInfo} />
+      <ContraindicationAlert
+        info={contraindicationInfo}
+        hasInteractions={!!medicine.interactions}
+      />
       <MedicineAccordion
         efficacy={medicine.efficacy}
         usage={medicine.usage}

@@ -7,6 +7,8 @@ import type {
 
 interface ContraindicationAlertProps {
   info: ContraindicationInfo;
+  // 약 설명서(e약은요)의 상호작용 값이 있어 아래 아코디언에 '상호작용' 항목이 보이는지
+  hasInteractions: boolean;
 }
 
 // 짝 성분이 이 수를 넘으면 나머지는 접어 둔다 (데이터 기준 최대 38개)
@@ -14,6 +16,9 @@ const VISIBLE_PARTNER_COUNT = 5;
 const TITLE_ID = 'dur-contraindication-title';
 const TITLE = 'DUR 병용금기 성분 정보';
 const EMPTY_REASON = '사유 정보 없음(DUR 원문 기준)';
+// 이 카드가 보여주는 범위. 약 설명서의 상호작용과 다른 목록임을 알리려고 모든 상태에서 제목 바로 아래에 둔다
+const SCOPE_NOTE =
+  "식약처가 병용금기로 공식 지정한 성분 조합만 보여 줍니다. 약 설명서의 '상호작용'에는 이 목록에 없는 주의사항이 적혀 있을 수 있습니다";
 
 // 카드 안 한글은 낱말 단위로 줄바꿈하고(break-keep), 칸보다 긴 성분명만 글자 단위로 나눠 넘치지 않게 한다(wrap-anywhere)
 // 카드 안 글자는 대비 4.5 이상을 위해 text-muted(라이트 4.18) 대신 text-base를 쓰고 크기로 위계를 나눈다
@@ -102,6 +107,7 @@ function NeutralCard({ children }: { children: ReactNode }) {
       <h2 id={TITLE_ID} className="text-text-base font-bold">
         {TITLE}
       </h2>
+      <p className="text-text-base text-sm">{SCOPE_NOTE}</p>
       {children}
     </section>
   );
@@ -109,6 +115,7 @@ function NeutralCard({ children }: { children: ReactNode }) {
 
 export default function ContraindicationAlert({
   info,
+  hasInteractions,
 }: ContraindicationAlertProps) {
   // 조회 실패는 "조합 없음"과 구분한다 (목록에 없는 것처럼 읽히지 않게)
   if (info.status === 'error') {
@@ -129,10 +136,13 @@ export default function ContraindicationAlert({
   if (withPartners.length === 0) {
     return (
       <NeutralCard>
+        {/* 상호작용 항목이 없는 약은 화면에 없는 항목을 가리키지 않도록 가운데 문장을 뺀다 */}
         <p className="text-text-base text-sm">
-          식약처 DUR 병용금기 목록에서 이 약과 연결된 성분 조합이 확인되지
-          않았습니다. 목록에 없다는 것이 다른 약과 함께 복용해도 된다는 뜻은
-          아닙니다
+          식약처 DUR 병용금기 지정 목록에서 이 약과 연결된 성분 조합이 확인되지
+          않았습니다.
+          {hasInteractions &&
+            " 약 설명서의 '상호작용'에는 이 목록과 별개로 함께 복용할 때 주의할 약이 적혀 있을 수 있습니다."}{' '}
+          목록에 없다는 것이 함께 복용해도 된다는 뜻은 아닙니다
         </p>
         <Notices baseMonth={info.baseMonth} />
       </NeutralCard>
@@ -155,6 +165,7 @@ export default function ContraindicationAlert({
           <h2 id={TITLE_ID} className="text-danger-text font-bold">
             {TITLE}
           </h2>
+          <p className="text-text-base text-sm">{SCOPE_NOTE}</p>
           {withPartners.map((ingredient) => (
             <div key={ingredient.code} className="flex flex-col gap-2">
               <p className="text-text-base text-sm">
