@@ -28,9 +28,9 @@ function Notices({ baseMonth }: { baseMonth?: string | null }) {
       <div className={SENTENCES_CLASS}>
         <p>
           이 정보는 식약처 공개 데이터를 참고용으로 보여주며 의사·약사의
-          진단이나 처방을 대신하지 않습니다
+          진단이나 처방을 대신하지 않습니다.
         </p>
-        <p>함께 복용 중인 약이 있다면 의사 또는 약사에게 확인해 보세요</p>
+        <p>함께 복용 중인 약이 있다면 의사 또는 약사에게 확인해 보세요.</p>
       </div>
       {baseMonth !== undefined && (
         <p className="text-text-base text-xs">
@@ -138,7 +138,7 @@ export default function ContraindicationAlert({
       <NeutralCard>
         <div className={SENTENCES_CLASS}>
           <p>병용금기 성분 정보를 불러오지 못했습니다.</p>
-          <p>잠시 뒤 다시 확인해 주세요</p>
+          <p>잠시 뒤 다시 확인해 주세요.</p>
         </div>
         <Notices />
       </NeutralCard>
@@ -186,7 +186,7 @@ export default function ContraindicationAlert({
             <div key={ingredient.code} className="flex flex-col gap-2">
               <p className="text-text-base text-sm">
                 이 약의 성분({ingredient.name})은 식약처 DUR에서 아래 성분과
-                병용금기로 지정되어 있습니다
+                병용금기로 지정되어 있습니다.
               </p>
               <PartnerList partners={ingredient.partners} />
             </div>
