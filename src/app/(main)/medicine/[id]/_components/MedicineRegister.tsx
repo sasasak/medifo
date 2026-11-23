@@ -1,15 +1,21 @@
 'use client';
 
 import { createClient } from '@/utils/supabase/client';
-import { Plus } from 'lucide-react';
-import { useEffect, useState, useTransition } from 'react';
+import { Info, Plus } from 'lucide-react';
+import { useState, useTransition } from 'react';
 import TimeItem from './TimeItem';
 import { useRouter } from 'next/navigation';
+import StopMedicineButton from '@/components/medicine/StopMedicineButton';
 import { regenerateIntakeLogsAction } from '../regenerateIntakeLogsAction';
 import {
-  medicineRegisterSchema,
+  createMedicineRegisterSchema,
   type RepeatType,
 } from '@/schemas/medicineRegisterSchema';
+import {
+  START_DATE_RANGE_MESSAGE,
+  getEditableFloor,
+  toDateString,
+} from '@/utils/intakeLogs/editableRange';
 
 const REPEAT_TYPE_OPTIONS: { value: RepeatType; label: string }[] = [
   { value: 'daily', label: '매일 반복' },
@@ -21,12 +27,12 @@ const FREQUENCY_LABEL: Record<RepeatType, string> = {
   once: '1회',
 };
 
-function toDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
+// 기존 약 수정 시: 날짜 항목을 눌러 들어와도 약 전체 일정을 수정하는 화면임을 안내
+const EDIT_NOTICE: Record<RepeatType, string> = {
+  daily:
+    '이 화면은 날짜와 관계없이 이 약의 전체 복용 일정을 수정합니다. 시간을 바꾸면 체크하지 않은 최근 7일과 오늘 이후 일정이 새 시간으로 바뀌고, 이미 체크한 날짜의 기록은 그대로 유지됩니다.',
+  once: '1회성 약은 가장 최근에 등록한 날짜가 표시됩니다. 이전에 체크한 날짜의 기록은 그대로 유지됩니다.',
+};
 
 interface MedicineRegisterProps {
   medicineId: string;
@@ -45,24 +51,19 @@ export default function MedicineRegister({
   userId,
   existingData,
 }: MedicineRegisterProps) {
-  const [times, setTimes] = useState<string[]>([]);
-  const [repeatType, setRepeatType] = useState<RepeatType>('daily');
-  const [startDate, setStartDate] = useState(() => toDateString(new Date()));
+  const [times, setTimes] = useState<string[]>(existingData?.times || []);
+  const [repeatType, setRepeatType] = useState<RepeatType>(
+    existingData?.repeatType || 'daily',
+  );
+  const [startDate, setStartDate] = useState(
+    () => existingData?.startDate || toDateString(new Date()),
+  );
+  const [minStartDate] = useState(() =>
+    getEditableFloor(toDateString(new Date())),
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  useEffect(() => {
-    if (existingData?.times) {
-      setTimes(existingData.times);
-    }
-    if (existingData?.repeatType) {
-      setRepeatType(existingData.repeatType);
-    }
-    if (existingData?.startDate) {
-      setStartDate(existingData.startDate);
-    }
-  }, [existingData]);
 
   const handleAddTime = () => {
     setTimes((prev) => [...prev, '']);
@@ -84,7 +85,10 @@ export default function MedicineRegister({
   };
 
   const handleRegister = () => {
-    const parsed = medicineRegisterSchema.safeParse({
+    const parsed = createMedicineRegisterSchema({
+      minStartDate,
+      keepStartDate: existingData?.startDate,
+    }).safeParse({
       repeatType,
       startDate,
       times,
@@ -158,6 +162,12 @@ export default function MedicineRegister({
 
   return (
     <div className="bg-card border-border-light mt-4 rounded-2xl border p-6">
+      {existingData && (
+        <div className="bg-card-muted text-text-muted mb-4 flex gap-2 rounded-xl p-3 text-sm">
+          <Info size={16} className="mt-0.5 shrink-0" />
+          <p>{EDIT_NOTICE[existingData.repeatType]}</p>
+        </div>
+      )}
       <span>복용 주기</span>
       <div className="mt-2 flex gap-2">
         {REPEAT_TYPE_OPTIONS.map((option) => (
@@ -180,9 +190,13 @@ export default function MedicineRegister({
         <input
           type="date"
           value={startDate}
+          min={minStartDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm outline-none"
+          className="border-border-light mt-2 w-full rounded-lg border p-2 text-sm"
         />
+        <p className="text-text-muted mt-1 text-xs">
+          {START_DATE_RANGE_MESSAGE}
+        </p>
       </div>
 
       <div className="mt-6 flex items-center justify-between">
@@ -222,6 +236,16 @@ export default function MedicineRegister({
             ? '+ 복용 시간 수정'
             : '+ 복용 약에 추가'}
       </button>
+      {existingData && (
+        <StopMedicineButton
+          userMedicineId={existingData.id}
+          className="border-border-light text-text-base hover:bg-card-muted mt-3 w-full cursor-pointer rounded-full border py-4 font-bold transition-colors"
+          // 뒤로 가기로 종료 전 수정 화면에 돌아오지 않도록 replace 사용
+          onStopped={() => router.replace('/my-medicines')}
+        >
+          복용 종료
+        </StopMedicineButton>
+      )}
     </div>
   );
 }

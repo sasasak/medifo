@@ -7,14 +7,14 @@ import { useEffect, useState } from 'react';
 export default function MyMedicineClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [showToast, setShowToast] = useState(false);
+  const isRegistered = searchParams.get('registered') === 'true';
+  const [showToast, setShowToast] = useState(isRegistered);
 
   useEffect(() => {
-    if (searchParams.get('registered') === 'true') {
-      setShowToast(true);
+    if (isRegistered) {
       router.replace('/my-medicines');
     }
-  }, [searchParams, router]);
+  }, [isRegistered, router]);
   return (
     <>
       {showToast && (

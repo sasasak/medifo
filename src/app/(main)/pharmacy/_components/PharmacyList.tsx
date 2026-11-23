@@ -1,12 +1,4 @@
-interface Pharmacy {
-  id: string;
-  place_name: string;
-  address_name: string;
-  phone: string;
-  distance: string;
-  x: string;
-  y: string;
-}
+import type { Pharmacy } from '../types';
 
 interface PharmacyListProps {
   pharmacies: Pharmacy[];

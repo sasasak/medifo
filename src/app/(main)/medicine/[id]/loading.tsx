@@ -1,5 +1,5 @@
 // 약 상세 로딩 화면
-// 병용금기 안내는 해당 약에만 나오는 영역이라 스켈레톤에서 뺀다.
+// 병용금기 성분 정보는 조합이 없는 약에도 짧은 카드로 나오므로 스켈레톤에 포함한다.
 // 아코디언 항목 수는 약마다 1~7개로 달라 중간값인 4줄로 둔다.
 export default function MedicineDetailLoading() {
   return (
@@ -18,6 +18,12 @@ export default function MedicineDetailLoading() {
           <div className="bg-card-muted h-5 w-1/3 rounded" />
           <div className="bg-card-muted h-5 w-3/4 rounded" />
         </div>
+      </div>
+
+      <div className="bg-card border-border-light mt-4 flex flex-col gap-3 rounded-2xl border p-6">
+        <div className="bg-card-muted h-6 w-44 rounded-lg" />
+        <div className="bg-card-muted h-4 w-3/4 rounded" />
+        <div className="bg-card-muted h-4 w-1/2 rounded" />
       </div>
 
       <div className="flex flex-col gap-3 py-3">

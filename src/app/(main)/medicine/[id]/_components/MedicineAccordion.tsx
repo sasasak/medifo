@@ -94,7 +94,11 @@ export default function MedicineAccordionProps({
       defaultOpen: true,
     },
     { title: '주의사항 경고', content: warnings, variant: 'danger' },
-    { title: '상호작용', content: interactions, variant: 'warning' },
+    {
+      title: '상호작용 (약 설명서 원문)',
+      content: interactions,
+      variant: 'warning',
+    },
     { title: '부작용', content: sideEffects, variant: 'warning' },
     { title: '보관 방법', content: storage },
   ];

@@ -1,17 +1,10 @@
-import { createClient } from '@/utils/supabase/server';
 import MedicineWarningCard from './MedicineWarningCard';
+import { getPopularMedicines } from '../getPopularMedicines';
 
-// TODO: 실제 서비스 데이터가 쌓이면 user_medicines 등록 건수 기준
-// 인기순 정렬로 교체 (현재는 테스트 데이터가 적어 의미 있는 집계 불가)
 export default async function MedicineWarnings() {
-  const supabase = await createClient();
-  const { data: warnings } = await supabase
-    .from('medicines')
-    .select('id, name, precautions')
-    .not('precautions', 'is', null)
-    .limit(5);
+  const warnings = await getPopularMedicines();
 
-  if (!warnings || warnings.length === 0) return null;
+  if (warnings.length === 0) return null;
 
   return (
     <div className="mt-6">
