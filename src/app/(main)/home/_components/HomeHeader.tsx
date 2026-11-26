@@ -1,6 +1,5 @@
 'use client';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { Bell } from 'lucide-react';
 
 interface HomeHeaderProps {
   nickname?: string;
@@ -16,9 +15,6 @@ export default function HomeHeader({ nickname, date }: HomeHeaderProps) {
       </div>
       <div className="flex items-center gap-4">
         <ThemeToggle />
-        <button type="button" className="cursor-pointer">
-          <Bell size={20} />
-        </button>
       </div>
     </div>
   );
