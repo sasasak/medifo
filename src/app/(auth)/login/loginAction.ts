@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { loginSchema } from '@/schemas/loginSchema';
 import { toFieldErrors } from '@/schemas/zodErrors';
+import { getDemoCredentials } from '@/utils/demoAccount';
 
 type LoginErrors = {
   email?: string;
@@ -53,6 +54,33 @@ export const loginAction = async (
     return {
       errors: { password: '이메일과 비밀번호를 다시 확인해주세요.' },
     };
+  }
+
+  redirect(isSafeRedirectPath(redirectTo) ? redirectTo : '/home');
+};
+
+export type DemoLoginActionState = { error: string } | null;
+
+const DEMO_LOGIN_ERROR =
+  '체험 계정으로 로그인하지 못했어요. 잠시 후 다시 시도해주세요.';
+
+export const demoLoginAction = async (
+  _: DemoLoginActionState,
+  formData: FormData,
+): Promise<DemoLoginActionState> => {
+  const redirectTo = formData.get('redirect') as string | null;
+
+  // 환경변수가 없을 때도 같은 문구만 보여주고 변수 이름은 노출하지 않음
+  const credentials = getDemoCredentials();
+  if (!credentials) {
+    return { error: DEMO_LOGIN_ERROR };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword(credentials);
+
+  if (error) {
+    return { error: DEMO_LOGIN_ERROR };
   }
 
   redirect(isSafeRedirectPath(redirectTo) ? redirectTo : '/home');

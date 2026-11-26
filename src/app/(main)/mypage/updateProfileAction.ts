@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { profileSchema } from '@/schemas/profileSchema';
 import { toFieldErrors } from '@/schemas/zodErrors';
+import { DEMO_PROFILE_BLOCKED_MESSAGE, isDemoUser } from '@/utils/demoAccount';
 
 type UpdateProfileState = { error: string; success: boolean };
 
@@ -35,6 +36,11 @@ export const updateProfileAction = async (
       error: '로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요.',
       success: false,
     };
+  }
+
+  // 체험 계정 닉네임은 홈 인사말에 그대로 보이므로 바꾸지 못하게 함
+  if (isDemoUser(user.email)) {
+    return { error: DEMO_PROFILE_BLOCKED_MESSAGE, success: false };
   }
 
   const { error } = await supabase

@@ -3,12 +3,18 @@
 import Input from '@/components/ui/Input';
 import Link from 'next/link';
 import { Pill } from 'lucide-react';
-import { loginAction } from './loginAction';
+import { demoLoginAction, loginAction } from './loginAction';
 import { Suspense, useActionState, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 function LoginForm() {
-  const [state, formAction, isPending] = useActionState(loginAction, null);
+  const [state, formAction, isLoginPending] = useActionState(loginAction, null);
+  const [demoState, demoFormAction, isDemoPending] = useActionState(
+    demoLoginAction,
+    null,
+  );
+  // 한쪽 로그인이 진행 중이면 두 버튼을 모두 막음
+  const isPending = isLoginPending || isDemoPending;
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') ?? '';
   const [email, setEmail] = useState('');
@@ -53,10 +59,33 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="bg-button text-text-reverse-base hover:bg-hover-color h-14 w-full cursor-pointer rounded-4xl"
+          aria-busy={isLoginPending}
+          className="bg-button text-text-reverse-base hover:bg-hover-color h-14 w-full cursor-pointer rounded-4xl disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? '로그인 중 ... ' : '로그인'}
+          {isLoginPending ? '로그인 중 ... ' : '로그인'}
         </button>
+      </form>
+      {/* 이메일·비밀번호 입력에서 Enter를 누르면 위 폼만 제출되도록 폼을 나눔 */}
+      <form action={demoFormAction} className="mt-4 flex flex-col gap-2">
+        <input type="hidden" name="redirect" value={redirectTo} />
+        <button
+          type="submit"
+          disabled={isPending}
+          aria-busy={isDemoPending}
+          className="border-card-border bg-card text-text-base hover:bg-card-muted h-14 w-full cursor-pointer rounded-4xl border disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isDemoPending
+            ? '체험 계정으로 로그인 중 ... '
+            : '체험 계정으로 둘러보기'}
+        </button>
+        {demoState?.error && (
+          <p
+            role="alert"
+            className="text-danger-400 text-center text-sm break-keep"
+          >
+            {demoState.error}
+          </p>
+        )}
       </form>
       <p className="text-text-muted mt-6 flex items-center justify-center gap-1 text-center text-sm">
         아직 계정이 없으신가요?
