@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { redirect } from 'next/navigation';
+import { DEMO_WITHDRAW_BLOCKED_MESSAGE, isDemoUser } from '@/utils/demoAccount';
 
 export const withdrawAction = async () => {
   const supabase = await createClient();
@@ -15,6 +16,11 @@ export const withdrawAction = async () => {
 
   if (userError || !user) {
     return { error: '로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요.' };
+  }
+
+  // 체험 계정은 여러 사람이 함께 쓰므로 삭제 단계 전에 막음
+  if (isDemoUser(user.email)) {
+    return { error: DEMO_WITHDRAW_BLOCKED_MESSAGE };
   }
 
   const userId = user.id;
