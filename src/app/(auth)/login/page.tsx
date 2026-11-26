@@ -79,7 +79,10 @@ function LoginForm() {
             : '체험 계정으로 둘러보기'}
         </button>
         {demoState?.error && (
-          <p role="alert" className="text-danger-400 text-center text-sm">
+          <p
+            role="alert"
+            className="text-danger-400 text-center text-sm break-keep"
+          >
             {demoState.error}
           </p>
         )}

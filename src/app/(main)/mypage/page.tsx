@@ -28,7 +28,7 @@ export default async function MyPage() {
       <h1 className="text-text-base text-xl">마이페이지</h1>
 
       {isDemo && (
-        <p className="bg-card-muted text-text-base rounded-2xl px-5 py-4 text-sm">
+        <p className="bg-card-muted text-text-base rounded-2xl px-5 py-4 text-sm break-keep">
           {DEMO_NOTICE_MESSAGE}
         </p>
       )}
@@ -48,7 +48,7 @@ export default async function MyPage() {
         <p className="text-text-muted px-1 text-sm">계정</p>
         <div className="bg-card border-card-border rounded-2xl border">
           {isDemo ? (
-            <p className="text-text-base px-5 py-4 text-sm">
+            <p className="text-text-base px-5 py-4 text-sm break-keep">
               {DEMO_WITHDRAW_BLOCKED_MESSAGE}
             </p>
           ) : (
