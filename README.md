@@ -2,7 +2,7 @@
 
 복용 중인 약과 복용 시간을 등록하고, 날짜별 복용 여부를 기록·확인하는 복약 관리 웹 서비스
 
-- 식약처 e약은요 OpenAPI로 수집한 의약품 정보 검색, 카카오맵 기반 주변 약국 찾기 포함
+- 식약처 e약은요 OpenAPI로 수집한 의약품 정보 검색, 카카오맵 기반 주변 약국 찾기, 식약처 DUR 기준 병용금기 성분 안내 포함
 
 ## 배포 주소
 
@@ -11,7 +11,7 @@
 
 ## 데모 계정
 
-로그인 화면의 "체험 계정으로 둘러보기" 버튼으로 바로 이용할 수 있음. 버튼이 동작하지 않으면 아래 계정으로 로그인함
+로그인 화면의 "체험 계정으로 둘러보기" 버튼을 우선 사용하고, 버튼이 동작하지 않으면 아래 계정으로 로그인함
 
 - ID: `test2@test.com`
 - Password: `password!123`
@@ -22,7 +22,7 @@
 
 ## 화면
 
-캡처는 다크 모드 기준이며 라이트 모드도 지원함
+캡처는 다크 모드 기준이며 라이트 모드도 지원함 (2026-11-27, 로컬 운영 빌드, 체험 계정, 1920×900)
 
 <table>
   <tr>
@@ -30,16 +30,24 @@
     <th>약 검색</th>
   </tr>
   <tr>
-    <td><img src="docs/images/home.png" alt="홈 화면: 오늘 복용할 약과 이번 달 복용 현황 달력, 많이 복용하는 약 주의사항 카드" width="400"></td>
+    <td><img src="docs/images/home.png" alt="홈 화면: 인사말과 테마 전환 버튼, 오늘 복용할 약, 이번 달 복용 현황 달력, 많이 복용하는 약 주의사항 카드 4개" width="400"></td>
     <td><img src="docs/images/search.png" alt="약 검색 화면: 검색창과 최근 검색어, 많이 찾는 약 키워드 8개" width="400"></td>
   </tr>
   <tr>
-    <th>약 상세</th>
-    <th>내 복용 약</th>
+    <th>약 상세 (병용금기 성분 안내)</th>
+    <th>약 상세 (복용 수정·종료)</th>
   </tr>
   <tr>
-    <td><img src="docs/images/medicine-detail.png" alt="약 상세 화면: 약 정보와 복용 방법·주의사항 항목, 복용 주기·시작 날짜·복용 시간 수정 영역" width="400"></td>
-    <td><img src="docs/images/my-medicines.png" alt="내 복용 약 화면: 등록한 약 카드 5개와 복용 주기·시간, 삭제 버튼" width="400"></td>
+    <td><img src="docs/images/medicine-dur.png" alt="약 상세 화면 위쪽: 부루펜정200밀리그램의 약 정보와 DUR 병용금기 성분 카드(짝 성분 2개와 사유, 참고용 안내, 출처와 기준 연월)" width="400"></td>
+    <td><img src="docs/images/medicine-detail.png" alt="약 상세 화면 아래쪽: 약 설명서 항목, 복용 주기·시작 날짜·복용 시간 수정 영역과 복용 종료 버튼" width="400"></td>
+  </tr>
+  <tr>
+    <th>내 복용 약</th>
+    <th>마이페이지</th>
+  </tr>
+  <tr>
+    <td><img src="docs/images/my-medicines.png" alt="내 복용 약 화면: 등록한 약 카드 3개와 복용 주기·시간, 복용 종료·삭제 버튼" width="400"></td>
+    <td><img src="docs/images/mypage.png" alt="마이페이지 화면: 체험 계정 안내, 프로필, 다크 모드 설정, 체험 계정 탈퇴 제한 안내 (이메일은 촬영할 때 가림)" width="400"></td>
   </tr>
   <tr>
     <th>주변 약국</th>
@@ -52,7 +60,7 @@
 </table>
 
 <details>
-<summary>로그인, 회원가입, 마이페이지</summary>
+<summary>로그인, 회원가입</summary>
 
 <table>
   <tr>
@@ -60,14 +68,8 @@
     <th>회원가입</th>
   </tr>
   <tr>
-    <td><img src="docs/images/login.png" alt="로그인 화면: 이메일과 비밀번호 입력, 회원가입 링크" width="400"></td>
+    <td><img src="docs/images/login.png" alt="로그인 화면: 이메일과 비밀번호 입력, 체험 계정으로 둘러보기 버튼, 회원가입 링크" width="400"></td>
     <td><img src="docs/images/signup.png" alt="회원가입 화면: 이메일, 비밀번호, 비밀번호 확인, 닉네임 입력" width="400"></td>
-  </tr>
-  <tr>
-    <th>마이페이지</th>
-  </tr>
-  <tr>
-    <td><img src="docs/images/mypage.png" alt="마이페이지 화면: 프로필과 프로필 수정, 다크 모드·알림 설정 토글, 회원 탈퇴" width="400"></td>
   </tr>
 </table>
 
@@ -133,22 +135,22 @@
 
 버전은 `package.json` 기준
 
-| 구분           | 사용 기술                                                            | 선택 이유                                                                                                                |
-| -------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 프레임워크     | Next.js 16.2.9 (App Router), React 19.2.4                            |                                                                                                                          |
-| 언어           | TypeScript ^5                                                        |                                                                                                                          |
-| 스타일         | Tailwind CSS ^4.3.1                                                  |                                                                                                                          |
-| 백엔드         | Supabase (`@supabase/supabase-js` ^2.108.2, `@supabase/ssr` ^0.12.0) |                                                                                                                          |
-| 인증 처리 위치 | Next.js `proxy.ts`                                                   | 페이지에 들어가기 전 한 곳에서 인증 여부를 확인하기 위함. Next.js 16에서 `middleware.ts` 대신 권장되는 이름 (PR #26)     |
-| 입력값 검증    | Zod ^4.6.5                                                           | 정규식과 조건문으로 따로 작성하던 검증 규칙과 오류 문구를 스키마 한 곳에서 관리하기 위함 (PR #31)                        |
-| 테마           | next-themes ^0.4.6                                                   |                                                                                                                          |
-| 아이콘         | lucide-react ^1.21.0                                                 |                                                                                                                          |
-| 지도           | 카카오맵 JavaScript SDK (services 라이브러리)                        |                                                                                                                          |
-| 의약품 데이터  | 식약처 의약품개요정보(e약은요) OpenAPI                               |                                                                                                                          |
-| 코드 품질      | ESLint ^9 (`eslint-config-next` 16.2.9), Prettier ^3.8.4             |                                                                                                                          |
-| 패키지 매니저  | Bun (`bun.lock`)                                                     |                                                                                                                          |
-| 배포           | Vercel                                                               |                                                                                                                          |
-| 예약 작업      | GitHub Actions                                                       | Supabase 무료 플랜이 7일 동안 DB 활동이 적으면 일시정지되는 것을 막기 위함. 하루 2회 heartbeat 쓰기 + 조회 (PR #62, #70) |
+| 구분           | 사용 기술                                                                          | 선택 이유                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 프레임워크     | Next.js 16.2.9 (App Router), React 19.2.4                                          |                                                                                                                          |
+| 언어           | TypeScript ^5                                                                      |                                                                                                                          |
+| 스타일         | Tailwind CSS ^4.3.1                                                                |                                                                                                                          |
+| 백엔드         | Supabase (`@supabase/supabase-js` ^2.108.2, `@supabase/ssr` ^0.12.0)               |                                                                                                                          |
+| 인증 처리 위치 | Next.js `proxy.ts`                                                                 | 페이지에 들어가기 전 한 곳에서 인증 여부를 확인하기 위함. Next.js 16에서 `middleware.ts` 대신 권장되는 이름 (PR #26)     |
+| 입력값 검증    | Zod ^4.6.5                                                                         | 정규식과 조건문으로 따로 작성하던 검증 규칙과 오류 문구를 스키마 한 곳에서 관리하기 위함 (PR #31)                        |
+| 테마           | next-themes ^0.4.6                                                                 |                                                                                                                          |
+| 아이콘         | lucide-react ^1.21.0                                                               |                                                                                                                          |
+| 지도           | 카카오맵 JavaScript SDK (services 라이브러리)                                      |                                                                                                                          |
+| 의약품 데이터  | 식약처 의약품개요정보(e약은요) OpenAPI, 의약품안전사용서비스(DUR) 품목정보 OpenAPI |                                                                                                                          |
+| 코드 품질      | ESLint ^9 (`eslint-config-next` 16.2.9), Prettier ^3.8.4                           |                                                                                                                          |
+| 패키지 매니저  | Bun (`bun.lock`)                                                                   |                                                                                                                          |
+| 배포           | Vercel                                                                             |                                                                                                                          |
+| 예약 작업      | GitHub Actions                                                                     | Supabase 무료 플랜이 7일 동안 DB 활동이 적으면 일시정지되는 것을 막기 위함. 하루 2회 heartbeat 쓰기 + 조회 (PR #62, #70) |
 
 ## 폴더 구조
 
@@ -216,6 +218,7 @@ docs/schema.sql          SQL Editor에서 직접 실행한 테이블 구조 기�
 - 복용 여부 수정은 서버 액션에서 수정 가능 기간(오늘 기준 7일 전 ~ 오늘)을 다시 검사함
 - 홈의 날짜 쿼리(`?date=`)는 형식과 과거 날짜 여부를 서버에서 다시 검사함
 - 약 등록·수정·삭제, 최근 검색어 조회·삭제, 약 검색은 브라우저에서 Supabase로 직접 요청하므로 RLS에 의존함
+- 복용 종료는 서버 액션에서 로그인 사용자와 약 소유자를 다시 확인한 뒤 처리함
 
 ### 집계 함수 (RPC)
 
@@ -325,18 +328,18 @@ docs/schema.sql          SQL Editor에서 직접 실행한 테이블 구조 기�
 
 ## 프로젝트 규모
 
-기준: 2026-11-03, `dev` 브랜치 커밋 `51e61b4` (README 작업 커밋은 포함하지 않음)
+기준: 2026-11-27 측정, `dev` 브랜치 커밋 `f0167ab`(2026-11-26) (이번 README 작업 커밋과 PR은 포함하지 않음)
 
 | 항목                 | 값                                             | 측정 방법                                                                    |
 | -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
-| 기간                 | 2026-06-12 ~ 2026-11-03                        | `git log --reverse --format=%cs origin/dev` 첫 줄과 기준 커밋 날짜           |
-| 커밋                 | 185개 (merge 커밋 제외 154개)                  | `git rev-list --count origin/dev`, `--no-merges`                             |
-| PR                   | 31개 (모두 머지)                               | `gh pr list --state all`                                                     |
-| 이슈                 | 32개 (닫힘 31, 열림 1)                         | `gh issue list --state all`                                                  |
-| `src`의 ts·tsx 파일  | 82개 (내용 없는 파일 3개 포함)                 | `git ls-files 'src/*.ts' 'src/*.tsx'`                                        |
-| `src`의 ts·tsx 줄 수 | 4,415줄 (빈 줄·주석 포함)                      | 위 파일을 합쳐 `wc -l`                                                       |
+| 기간                 | 2026-06-12 ~ 2026-11-26                        | `git log --reverse --format=%cs origin/dev` 첫 줄과 기준 커밋 날짜           |
+| 커밋                 | 229개 (merge 커밋 제외 192개)                  | `git rev-list --count origin/dev`, `--no-merges`                             |
+| PR                   | 39개 (모두 머지)                               | `gh pr list --state all --limit 500 --json state`                            |
+| 이슈                 | 38개 (닫힘 37, 열림 1)                         | `gh issue list --state all --limit 500 --json state`                         |
+| `src`의 ts·tsx 파일  | 86개 (내용 없는 파일 3개 포함)                 | `git ls-files 'src/*.ts' 'src/*.tsx'`                                        |
+| `src`의 ts·tsx 줄 수 | 5,040줄 (빈 줄·주석 포함)                      | 위 파일을 합쳐 `wc -l`                                                       |
 | 화면 (`page.tsx`)    | 11개 (`/` 로그인 이동, 알림 준비 중 화면 포함) | `git ls-files 'src/*page.tsx'`                                               |
-| 서버 액션 파일       | 8개                                            | `'use server'`로 시작하는 파일                                               |
+| 서버 액션 파일       | 9개                                            | `'use server'`로 시작하는 파일                                               |
 | 의약품 데이터        | 4,757건 (낱알 이미지 없음 1,979건)             | Supabase REST `medicines` 조회 `Prefer: count=exact`                         |
 | 테스트               | 0개                                            | `.test`, `.spec`, `__tests__` 파일 검색. `package.json`에 test 스크립트 없음 |
 
@@ -344,7 +347,7 @@ docs/schema.sql          SQL Editor에서 직접 실행한 테이블 구조 기�
 
 아직 구현되지 않은 항목 (저장소 코드에서 확인)
 
-- 알림 기능 (복용 알림과 알림 설정 저장). 동작하지 않던 홈 알림 아이콘과 마이페이지 알림 설정 스위치는 숨겼고, `/notifications`는 "준비 중" 페이지만 있음
+- 알림 기능 (복용 알림과 알림 설정 저장). 동작하지 않던 홈 알림 아이콘과 마이페이지 알림 설정 스위치는 제거했고, `/notifications`는 "준비 중" 페이지만 있음
 - 교차복용 검사
   - 구현된 것: 약 상세에서 약 하나의 성분 기준으로 DUR 병용금기 짝 성분을 안내함
   - 남은 것: 등록한 약끼리 서로 병용금기인지 검사하는 기능은 없음. 수집한 약이 e약은요(일반의약품 위주)라 전문의약품 등록 확장이 먼저 필요함
@@ -368,7 +371,7 @@ docs/schema.sql          SQL Editor에서 직접 실행한 테이블 구조 기�
 ### 준비
 
 - Bun
-- Supabase 프로젝트 (위 테이블과 집계 함수가 있어야 함, 저장소에 스키마 파일 없음)
+- Supabase 프로젝트 (위 테이블과 집계 함수가 있어야 함. 저장소에는 DUR 병용금기 테이블과 keepalive SQL만 `docs/schema.sql`에 있음)
 - 카카오 개발자 JavaScript 키 (주변 약국)
 - 공공데이터포털 서비스 키 (의약품 데이터 수집 스크립트를 실행할 때만)
 
